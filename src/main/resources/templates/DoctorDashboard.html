@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Doctor Dashboard - HealthConnect</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        },
+                        dark: {
+                            50: '#f9fafb',
+                            100: '#f3f4f6',
+                            200: '#e5e7eb',
+                            300: '#d1d5db',
+                            400: '#9ca3af',
+                            500: '#6b7280',
+                            600: '#4b5563',
+                            700: '#374151',
+                            800: '#1f2937',
+                            900: '#111827',
+                        },
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        .glass-panel {
+            background: rgba(17, 24, 39, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .hover-scale {
+            transition: transform 0.2s ease-in-out;
+        }
+        .hover-scale:hover {
+            transform: scale(1.02);
+        }
+    </style>
+</head>
+<body class="bg-dark-900 text-gray-100 min-h-screen">
+    <div class="flex min-h-screen">
+        <!-- Sidebar -->
+        <nav class="w-64 bg-gradient-to-b from-dark-800 to-dark-900 text-white transition-all duration-300">
+            <div class="p-6">
+                <div class="flex items-center space-x-4 mb-8">
+                    <img th:src="${doctor != null ? doctor.profilePicture : '/images/default-avatar.png'}" alt="Profile" class="w-12 h-12 rounded-full border-2 border-primary-500">
+                    <div>
+                        <h2 class="text-lg font-semibold" th:text="${doctor != null ? doctor.firstName + ' ' + doctor.lastName : 'Doctor'}">Doctor Name</h2>
+                        <p class="text-sm text-primary-300">Doctor</p>
+                    </div>
+                </div>
+                <ul class="space-y-2">
+                    <li>
+                        <a href="/doctors/dashboard" class="flex items-center space-x-3 p-3 rounded-lg bg-primary-700/50 text-white hover:bg-primary-700/70 transition-colors">
+                            <i class="fas fa-home"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/patients/my-patients" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-primary-700/50 text-white transition-colors">
+                            <i class="fas fa-users"></i>
+                            <span>My Patients</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/doctors/myappointments" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-primary-700/50 text-white transition-colors">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>Appointments</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/doctors/manage-profile" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-primary-700/50 text-white transition-colors">
+                            <i class="fas fa-user-md"></i>
+                            <span>Manage Profile</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/logout" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-red-700/50 text-red-300 transition-colors">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Logout</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-8">
+            <div class="max-w-7xl mx-auto">
+                <h1 class="text-3xl font-bold text-white mb-8">
+                    <i class="fas fa-tachometer-alt text-primary-400 mr-3"></i>
+                    Dashboard
+                </h1>
+
+                <!-- Stats Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <!-- Total Patients -->
+                    <div class="glass-panel p-6 rounded-xl hover-scale">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="p-3 bg-primary-500/20 rounded-lg">
+                                <i class="fas fa-users text-primary-400 text-2xl"></i>
+                            </div>
+                            <span class="text-sm text-gray-400">Total Patients</span>
+                        </div>
+                        <h3 class="text-2xl font-bold text-white" th:text="${totalPatients}">0</h3>
+                    </div>
+
+                    <!-- Appointments Today -->
+                    <div class="glass-panel p-6 rounded-xl hover-scale">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="p-3 bg-green-500/20 rounded-lg">
+                                <i class="fas fa-calendar-check text-green-400 text-2xl"></i>
+                            </div>
+                            <span class="text-sm text-gray-400">Appointments Today</span>
+                        </div>
+                        <h3 class="text-2xl font-bold text-white" th:text="${appointmentsToday.size()}">0</h3>
+                    </div>
+
+                    <!-- Average Rating -->
+                    <div class="glass-panel p-6 rounded-xl hover-scale">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="p-3 bg-yellow-500/20 rounded-lg">
+                                <i class="fas fa-star text-yellow-400 text-2xl"></i>
+                            </div>
+                            <span class="text-sm text-gray-400">Average Rating</span>
+                        </div>
+                        <h3 class="text-2xl font-bold text-white" th:text="${averageRating}">0.0</h3>
+                    </div>
+
+                    <!-- Total Prescriptions -->
+                    <div class="glass-panel p-6 rounded-xl hover-scale">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="p-3 bg-purple-500/20 rounded-lg">
+                                <i class="fas fa-prescription-bottle-alt text-purple-400 text-2xl"></i>
+                            </div>
+                            <span class="text-sm text-gray-400">Total Prescriptions</span>
+                        </div>
+                        <h3 class="text-2xl font-bold text-white" th:text="${prescriptions}">0</h3>
+                    </div>
+                </div>
+
+                <!-- Upcoming Appointments and Reviews -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Upcoming Appointments -->
+                    <div class="glass-panel p-6 rounded-xl">
+                        <div class="flex items-center justify-between mb-6">
+                            <h2 class="text-xl font-semibold text-white">
+                                <i class="fas fa-calendar-alt text-primary-400 mr-2"></i>
+                                Upcoming Appointments
+                            </h2>
+                        </div>
+                        <div class="space-y-4">
+                            <div th:each="appointment : ${upcomingAppointments}" class="bg-dark-800/50 p-4 rounded-lg hover-scale">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <h3 class="text-lg font-semibold text-white" th:text="${appointment.patient.firstName + ' ' + appointment.patient.lastName}">Patient Name</h3>
+                                        <p class="text-sm text-gray-400" th:text="${#temporals.format(appointment.apptDate, 'MMM dd, yyyy')} + ' at ' + ${#temporals.format(appointment.apptTime, 'HH:mm')}">Date and Time</p>
+                                    </div>
+                                    <a th:href="@{/doctors/myappointments}" class="text-primary-400 hover:text-primary-300">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Latest Reviews -->
+                    <div class="glass-panel p-6 rounded-xl">
+                        <div class="flex items-center justify-between mb-6">
+                            <h2 class="text-xl font-semibold text-white">
+                                <i class="fas fa-star text-yellow-400 mr-2"></i>
+                                Latest Reviews
+                            </h2>
+                        </div>
+                        <div class="space-y-4">
+                            <div th:each="review : ${latestReviews}" class="bg-dark-800/50 p-4 rounded-lg hover-scale">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <h3 class="text-lg font-semibold text-white" th:text="${review.patient.firstName + ' ' + review.patient.lastName}">Patient Name</h3>
+                                        <p class="text-sm text-gray-300 mt-1" th:text="${review.descript}">Review text</p>
+                                        <div class="flex items-center mt-2">
+                                            <i th:each="star : ${#numbers.sequence(1, review.stars)}" class="fas fa-star text-yellow-400 mr-1"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</body>
+</html>

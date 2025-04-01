@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Prescriptions - HealthConnect</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        },
+                        dark: {
+                            50: '#f9fafb',
+                            100: '#f3f4f6',
+                            200: '#e5e7eb',
+                            300: '#d1d5db',
+                            400: '#9ca3af',
+                            500: '#6b7280',
+                            600: '#4b5563',
+                            700: '#374151',
+                            800: '#1f2937',
+                            900: '#111827',
+                        },
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-in-out',
+                        'slide-in': 'slideIn 0.5s ease-in-out',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideIn: {
+                            '0%': { transform: 'translateX(-100%)' },
+                            '100%': { transform: 'translateX(0)' },
+                        },
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        .glass-panel {
+            background: rgba(17, 24, 39, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .hover-scale {
+            transition: transform 0.2s ease-in-out;
+        }
+        .hover-scale:hover {
+            transform: scale(1.02);
+        }
+    </style>
+</head>
+<body class="bg-dark-900 text-gray-100 transition-colors duration-200">
+    <div class="flex min-h-screen">
+        <!-- Sidebar -->
+        <nav class="w-64 bg-gradient-to-b from-dark-800 to-dark-900 text-white transition-all duration-300">
+            <div class="p-6">
+                <div class="flex items-center space-x-4 mb-8">
+                    <img th:src="${patient != null ? patient.profilePicture : '/images/default-avatar.png'}" alt="Profile" class="w-12 h-12 rounded-full border-2 border-primary-500">
+                    <div>
+                        <h2 class="text-lg font-semibold" th:text="${patient != null ? patient.firstName + ' ' + patient.lastName : 'Patient'}">Patient Name</h2>
+                        <p class="text-sm text-primary-300">Patient</p>
+                    </div>
+                </div>
+                <ul class="space-y-2">
+                    <li>
+                        <a href="/patients/home" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-dark-700 text-gray-300 transition-colors">
+                            <i class="fas fa-home"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/doctors/searchpage" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-dark-700 text-gray-300 transition-colors">
+                            <i class="fas fa-search"></i>
+                            <span>Find Doctors</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/prescriptions" class="flex items-center space-x-3 p-3 rounded-lg bg-dark-700 text-white">
+                            <i class="fas fa-file-prescription"></i>
+                            <span>Prescriptions</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/patients/view-health-goals" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-dark-700 text-gray-300 transition-colors">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Health Goals</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/patients/manage-profile" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-dark-700 text-gray-300 transition-colors">
+                            <i class="fas fa-user-cog"></i>
+                            <span>Manage Profile</span>
+                        </a>
+                    </li>
+                </ul>
+                
+                <!-- Logout Button -->
+                <div class="mt-auto pt-8">
+                    <a href="/logout" class="flex items-center space-x-3 p-3 rounded-lg bg-red-900/30 hover:bg-red-900/40 text-red-200 transition-colors">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-8">
+            <div class="max-w-4xl mx-auto">
+                <div class="glass-panel p-6 rounded-xl mb-8">
+                    <div class="flex justify-between items-center mb-6">
+                        <h1 class="text-2xl font-bold text-white">
+                            <i class="fas fa-file-prescription text-primary-400 mr-2"></i>
+                            My Prescriptions
+                        </h1>
+                    </div>
+
+                    <!-- Prescriptions List -->
+                    <div class="space-y-4">
+                        <div th:if="${prescriptions != null && !prescriptions.isEmpty()}" class="space-y-4">
+                            <div th:each="prescription : ${prescriptions}" class="glass-panel p-4 rounded-lg hover-scale">
+                                <div class="flex justify-between items-start mb-4">
+                                    <div>
+                                        <h3 class="text-lg font-semibold text-white" th:text="${prescription.medication}">Medication Name</h3>
+                                        <p class="text-sm text-gray-400" th:text="${prescription.doctor != null ? 'Prescribed by Dr. ' + prescription.doctor.firstName + ' ' + prescription.doctor.lastName : 'Prescribed by Unknown Doctor'}">Doctor Name</p>
+                                    </div>
+                                    <span th:class="${prescription.endDate.isAfter(#temporals.createNow()) ? 'bg-green-900/30 text-green-300' : 'bg-red-900/30 text-red-300'}"
+                                          class="px-3 py-1 rounded-full text-sm font-medium">
+                                        <span th:text="${prescription.endDate.isAfter(#temporals.createNow()) ? 'Active' : 'Expired'}">Status</span>
+                                    </span>
+                                </div>
+                                <div class="grid grid-cols-2 gap-4 mb-4">
+                                    <div>
+                                        <p class="text-sm text-gray-400">Dosage</p>
+                                        <p class="text-white" th:text="${prescription.dosage}">Dosage</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm text-gray-400">Duration</p>
+                                        <p class="text-white" th:text="${prescription.startDate + ' to ' + prescription.endDate}">Duration</p>
+                                    </div>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-400">Instructions</p>
+                                    <p class="text-white" th:text="${prescription.instructions}">Instructions</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div th:unless="${prescriptions != null && !prescriptions.isEmpty()}" class="text-center py-8">
+                            <i class="fas fa-file-prescription text-4xl text-gray-600 mb-4"></i>
+                            <p class="text-gray-400">No prescriptions available</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</body>
+</html> 

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Manage Profile - Doctor's View</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+        }
+
+        .side-nav {
+            width: 250px;
+            height: 100vh;
+            background-color: #1e88e5;
+            padding-top: 20px;
+            position: fixed;
+            transition: all 0.3s;
+        }
+
+        .side-nav a {
+            color: white;
+            padding: 12px 16px;
+            display: block;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .side-nav a:hover {
+            background-color: #1565c0;
+        }
+
+        .side-nav a i {
+            margin-right: 10px;
+        }
+
+        .side-nav a.active {
+            background-color: #1565c0;
+        }
+
+        .main-content {
+            margin-left: 270px;
+            padding: 30px;
+        }
+    </style>
+</head>
+<body>
+<div class="side-nav">
+    <a href="/doctors/dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+    <a href="/patients/my-patients"><i class="fas fa-users"></i> My Patients</a>
+    <a href="/doctors/myappointments"><i class="far fa-calendar-alt"></i> Appointments</a>
+    <a href="/doctors/manage-profile"><i class="fas fa-user-md"></i> Manage Profile</a>
+    <a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+</div>
+
+
+<div class="container-fluid main-content">
+    <h1 class="mb-4"><i class="fas fa-user-md"></i> Manage Profile</h1>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="text-center mb-4">
+                        <img th:src="${doctor.profilePicture}" class="profile-picture mb-3" alt="Doctor Profile Picture">
+                        <h3 th:text="${doctor.firstName + ' ' + doctor.lastName}"></h3>
+                        <p th:text="${doctor.specialization}"></p>
+                        <button class="btn btn-primary" data-toggle="modal" data-target="#updatePictureModal">
+                            <i class="fas fa-camera"></i> Update Picture
+                        </button>
+                    </div>
+                    <div class="text-center">
+                        <button class="btn btn-danger" data-toggle="modal" data-target="#changePasswordModal">
+                            <i class="fas fa-key"></i> Change Password
+                        </button>
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <form th:action="@{/doctors/update-profile}" method="post">
+                        <div class="form-group">
+                            <label for="firstName">First Name:</label>
+                            <input type="text" id="firstName" name="firstName" th:value="${doctor.firstName}" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="lastName">Last Name:</label>
+                            <input type="text" id="lastName" name="lastName" th:value="${doctor.lastName}" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email:</label>
+                            <input type="email" id="email" name="email" th:value="${doctor.email}" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="specialization">Specialization:</label>
+                            <input type="text" id="specialization" name="specialization" th:value="${doctor.specialization}" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="biography">Biography:</label>
+                            <textarea id="biography" name="biography" class="form-control" rows="3" th:text="${doctor.biography}"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Save Changes
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Update Picture Modal -->
+<div class="modal fade" id="updatePictureModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title"><i class="fas fa-camera"></i> Update Profile Picture</h5>
+                <button type="button" class="close text-white" data-dismiss="modal">&times;</button>
+            </div>
+            <form th:action="@{/doctors/update-picture}" method="post" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="profilePicture">Select New Picture:</label>
+                        <input type="file" id="profilePicture" name="profilePicture" class="form-control-file" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Update Picture</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Change Password Modal -->
+<div class="modal fade" id="changePasswordModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title"><i class="fas fa-key"></i> Change Password</h5>
+                <button type="button" class="close text-white" data-dismiss="modal">&times;</button>
+            </div>
+            <form th:action="@{/doctors/change-password}" method="post">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="currentPassword">Current Password:</label>
+                        <input type="password" id="currentPassword" name="currentPassword" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="newPassword">New Password:</label>
+                        <input type="password" id="newPassword" name="newPassword" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm Password:</label>
+                        <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-danger">Change Password</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>

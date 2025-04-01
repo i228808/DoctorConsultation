@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Find Doctors - HealthConnect</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        },
+                        dark: {
+                            50: '#f9fafb',
+                            100: '#f3f4f6',
+                            200: '#e5e7eb',
+                            300: '#d1d5db',
+                            400: '#9ca3af',
+                            500: '#6b7280',
+                            600: '#4b5563',
+                            700: '#374151',
+                            800: '#1f2937',
+                            900: '#111827',
+                        },
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-in-out',
+                        'slide-in': 'slideIn 0.5s ease-in-out',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideIn: {
+                            '0%': { transform: 'translateX(-100%)' },
+                            '100%': { transform: 'translateX(0)' },
+                        },
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        .glass-panel {
+            background: rgba(17, 24, 39, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .hover-scale {
+            transition: transform 0.2s ease-in-out;
+        }
+        .hover-scale:hover {
+            transform: scale(1.02);
+        }
+    </style>
+</head>
+<body class="bg-dark-900 text-gray-100 transition-colors duration-200">
+    <div class="flex min-h-screen">
+        <!-- Sidebar -->
+        <nav class="w-64 bg-gradient-to-b from-dark-800 to-dark-900 text-white transition-all duration-300">
+            <div class="p-6">
+                <div class="flex items-center space-x-4 mb-8">
+                    <img th:src="${Patient != null ? Patient.profilePicture : '/images/default-avatar.png'}" alt="Profile" class="w-12 h-12 rounded-full border-2 border-primary-500">
+                    <div>
+                        <h2 class="text-lg font-semibold" th:text="${Patient != null ? Patient.firstName + ' ' + Patient.lastName : 'Patient'}">Patient Name</h2>
+                        <p class="text-sm text-primary-300">Patient</p>
+                    </div>
+                </div>
+                <ul class="space-y-2">
+                    <li>
+                        <a href="/patients/home" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-dark-700 text-gray-300 transition-colors">
+                            <i class="fas fa-home"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/doctors/searchpage" class="flex items-center space-x-3 p-3 rounded-lg bg-dark-700 text-white">
+                            <i class="fas fa-search"></i>
+                            <span>Find Doctors</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/prescriptions" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-dark-700 text-gray-300 transition-colors">
+                            <i class="fas fa-file-prescription"></i>
+                            <span>Prescriptions</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/patients/view-health-goals" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-dark-700 text-gray-300 transition-colors">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Health Goals</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/patients/manage-profile" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-dark-700 text-gray-300 transition-colors">
+                            <i class="fas fa-user-cog"></i>
+                            <span>Manage Profile</span>
+                        </a>
+                    </li>
+                </ul>
+                
+                <!-- Logout Button -->
+                <div class="mt-auto pt-8">
+                    <a href="/logout" class="flex items-center space-x-3 p-3 rounded-lg bg-red-900/30 hover:bg-red-900/40 text-red-200 transition-colors">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-8">
+            <div class="max-w-4xl mx-auto">
+                <!-- Search Section -->
+                <div class="glass-panel p-6 rounded-xl mb-8">
+                    <h1 class="text-2xl font-bold text-white mb-6">
+                        <i class="fas fa-search text-primary-400 mr-2"></i>
+                        Find a Doctor
+                    </h1>
+                    
+                    <form th:action="@{/doctors/search}" method="get" class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="specialization" class="block text-sm font-medium text-gray-300 mb-2">Specialization</label>
+                                <select id="specialization" name="specialization" class="w-full bg-dark-800 border border-dark-700 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                                    <option value="">All Specializations</option>
+                                    <option th:each="spec : ${specializations}" th:value="${spec}" th:text="${spec}">Specialization</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="location" class="block text-sm font-medium text-gray-300 mb-2">Location</label>
+                                <input type="text" id="location" name="location" placeholder="Enter city or area" class="w-full bg-dark-800 border border-dark-700 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                            </div>
+                        </div>
+                        <div>
+                            <label for="search" class="block text-sm font-medium text-gray-300 mb-2">Search by Name or Keywords</label>
+                            <input type="text" id="search" name="search" placeholder="Enter doctor name or keywords" class="w-full bg-dark-800 border border-dark-700 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                        </div>
+                        <button type="submit" class="w-full bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+                            <i class="fas fa-search mr-2"></i>
+                            Search Doctors
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Search Results -->
+                <div th:if="${doctors != null && !doctors.isEmpty()}" class="space-y-4">
+                    <div th:each="doctor : ${doctors}" class="glass-panel p-6 rounded-lg hover-scale">
+                        <div class="flex items-start space-x-4">
+                            <img th:src="${doctor.profilePicture != null ? doctor.profilePicture : '/images/default-avatar.png'}" alt="Doctor Profile" class="w-20 h-20 rounded-full border-2 border-primary-500">
+                            <div class="flex-1">
+                                <div class="flex justify-between items-start mb-2">
+                                    <h3 class="text-xl font-semibold text-white" th:text="${doctor.firstName + ' ' + doctor.lastName}">Doctor Name</h3>
+                                    <span class="bg-primary-900/30 text-primary-300 px-3 py-1 rounded-full text-sm font-medium" th:text="${doctor.specialization}">Specialization</span>
+                                </div>
+                                <p class="text-gray-400 mb-4">Location not specified</p>
+                                <div class="grid grid-cols-2 gap-4 mb-4">
+                                    <div>
+                                        <p class="text-sm text-gray-400">Experience</p>
+                                        <p class="text-white">Not specified</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm text-gray-400">Rating</p>
+                                        <div class="flex items-center">
+                                            <i class="fas fa-star text-yellow-400 mr-1"></i>
+                                            <span class="text-white">N/A</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex space-x-4">
+                                    <a th:href="@{/doctors/profile/{id}(id=${doctor.id})}" class="bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+                                        <i class="fas fa-user-md mr-2"></i>
+                                        View Profile
+                                    </a>
+                                    <a th:href="@{/appointments/book/{id}(id=${doctor.id})}" class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+                                        <i class="fas fa-calendar-check mr-2"></i>
+                                        Book Appointment
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div th:unless="${doctors != null && !doctors.isEmpty()}" class="glass-panel p-8 rounded-lg text-center">
+                    <i class="fas fa-user-md text-4xl text-gray-600 mb-4"></i>
+                    <p class="text-gray-400">No doctors found matching your criteria</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</body>
+</html>

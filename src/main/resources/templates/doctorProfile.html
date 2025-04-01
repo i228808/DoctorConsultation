@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Doctor Profile - HealthConnect</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        },
+                        dark: {
+                            50: '#f9fafb',
+                            100: '#f3f4f6',
+                            200: '#e5e7eb',
+                            300: '#d1d5db',
+                            400: '#9ca3af',
+                            500: '#6b7280',
+                            600: '#4b5563',
+                            700: '#374151',
+                            800: '#1f2937',
+                            900: '#111827',
+                        },
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        .glass-panel {
+            background: rgba(17, 24, 39, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .hover-scale {
+            transition: transform 0.2s ease-in-out;
+        }
+        .hover-scale:hover {
+            transform: scale(1.02);
+        }
+    </style>
+</head>
+<body class="bg-dark-900 text-gray-100 min-h-screen">
+    <div class="flex min-h-screen">
+        <!-- Sidebar -->
+        <nav class="w-64 bg-gradient-to-b from-dark-800 to-dark-900 text-white transition-all duration-300">
+            <div class="p-6">
+                <div class="flex items-center space-x-4 mb-8">
+                    <img th:src="${patient != null ? patient.profilePicture : '/images/default-avatar.png'}" alt="Profile" class="w-12 h-12 rounded-full border-2 border-primary-500">
+                    <div>
+                        <h2 class="text-lg font-semibold" th:text="${patient != null ? patient.firstName + ' ' + patient.lastName : 'Patient'}">Patient Name</h2>
+                        <p class="text-sm text-primary-300">Patient</p>
+                    </div>
+                </div>
+                <ul class="space-y-2">
+                    <li>
+                        <a href="/patients/home" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-dark-700 text-gray-300 transition-colors">
+                            <i class="fas fa-home"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/doctors/searchpage" class="flex items-center space-x-3 p-3 rounded-lg bg-dark-700 text-white">
+                            <i class="fas fa-search"></i>
+                            <span>Find Doctors</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/prescriptions" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-dark-700 text-gray-300 transition-colors">
+                            <i class="fas fa-file-prescription"></i>
+                            <span>Prescriptions</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/patients/view-health-goals" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-dark-700 text-gray-300 transition-colors">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Health Goals</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/patients/manage-profile" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-dark-700 text-gray-300 transition-colors">
+                            <i class="fas fa-user-cog"></i>
+                            <span>Manage Profile</span>
+                        </a>
+                    </li>
+                </ul>
+                
+                <!-- Logout Button -->
+                <div class="mt-auto pt-8">
+                    <a href="/logout" class="flex items-center space-x-3 p-3 rounded-lg bg-red-900/30 hover:bg-red-900/40 text-red-200 transition-colors">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </a>
+                </div>
+
+                <!-- Add this in the navigation bar -->
+                <div class="relative">
+                    <a href="/notifications" class="text-gray-300 hover:text-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                  d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                        </svg>
+                        <span id="notification-badge" 
+                              class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center hidden">
+                            0
+                        </span>
+                    </a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-8">
+            <div class="max-w-4xl mx-auto">
+                <!-- Doctor Profile Section -->
+                <div class="glass-panel p-6 rounded-xl mb-8">
+                    <div class="flex items-start space-x-6">
+                        <img th:src="${doctor.profilePicture != null ? doctor.profilePicture : '/images/default-avatar.png'}" 
+                             alt="Doctor Profile" 
+                             class="w-32 h-32 rounded-full border-4 border-primary-500">
+                        <div class="flex-1">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <h1 class="text-3xl font-bold text-white" th:text="${doctor.firstName + ' ' + doctor.lastName}">Doctor Name</h1>
+                                    <p class="text-xl text-primary-300" th:text="${doctor.specialization}">Specialization</p>
+                                </div>
+                                <a th:href="@{/appointments/book/{id}(id=${doctor.id})}" 
+                                   class="bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-6 rounded-lg transition-colors">
+                                    <i class="fas fa-calendar-check mr-2"></i>
+                                    Book Appointment
+                                </a>
+                            </div>
+                            <div class="space-y-4">
+                                <div class="flex items-center text-gray-300">
+                                    <i class="fas fa-envelope text-primary-400 mr-3"></i>
+                                    <span th:text="${doctor.email}">email@example.com</span>
+                                </div>
+                                <div class="flex items-center text-gray-300">
+                                    <i class="fas fa-phone text-primary-400 mr-3"></i>
+                                    <span th:text="${doctor.phone}">+1234567890</span>
+                                </div>
+                                <div class="flex items-center text-gray-300">
+                                    <i class="fas fa-map-marker-alt text-primary-400 mr-3"></i>
+                                    <span th:text="${doctor.address}">Address</span>
+                                </div>
+                            </div>
+                            <div class="mt-6">
+                                <h3 class="text-lg font-semibold text-white mb-2">About</h3>
+                                <p class="text-gray-300" th:text="${doctor.biography}">Biography</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reviews Section -->
+                <div class="glass-panel p-6 rounded-xl mb-8">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold text-white">Reviews</h2>
+                        <div class="flex items-center">
+                            <i class="fas fa-star text-yellow-400 text-2xl mr-2"></i>
+                            <span class="text-2xl font-bold text-white" th:text="${averageRating}">4.5</span>
+                        </div>
+                    </div>
+
+                    <!-- Reviews List -->
+                    <div class="space-y-6">
+                        <div th:each="rating : ${ratings}" class="bg-dark-800/50 p-4 rounded-lg hover-scale">
+                            <div class="flex justify-between items-start mb-2">
+                                <div>
+                                    <h3 class="text-lg font-semibold text-white" th:text="${rating.patient.firstName + ' ' + rating.patient.lastName}">Patient Name</h3>
+                                    <div class="flex items-center text-yellow-400">
+                                        <i class="fas fa-star mr-1"></i>
+                                        <span th:text="${rating.stars}">5</span>
+                                    </div>
+                                </div>
+                                <span class="text-gray-400 text-sm" th:text="${#temporals.format(rating.date, 'MMM dd, yyyy')}">Date</span>
+                            </div>
+                            <p class="text-gray-300" th:text="${rating.descript}">Review text</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Add Review Section -->
+                <div class="glass-panel p-6 rounded-xl">
+                    <h2 class="text-2xl font-bold text-white mb-6">Add a Review</h2>
+                    <form th:action="@{/doctors/profile/{id}/add-ratings(id=${doctor.id})}" method="post" class="space-y-4">
+                        <div>
+                            <label for="stars" class="block text-sm font-medium text-gray-300 mb-2">Rating</label>
+                            <div class="flex space-x-2">
+                                <button type="button" class="rating-btn text-2xl text-gray-400 hover:text-yellow-400 transition-colors" data-rating="1">
+                                    <i class="far fa-star"></i>
+                                </button>
+                                <button type="button" class="rating-btn text-2xl text-gray-400 hover:text-yellow-400 transition-colors" data-rating="2">
+                                    <i class="far fa-star"></i>
+                                </button>
+                                <button type="button" class="rating-btn text-2xl text-gray-400 hover:text-yellow-400 transition-colors" data-rating="3">
+                                    <i class="far fa-star"></i>
+                                </button>
+                                <button type="button" class="rating-btn text-2xl text-gray-400 hover:text-yellow-400 transition-colors" data-rating="4">
+                                    <i class="far fa-star"></i>
+                                </button>
+                                <button type="button" class="rating-btn text-2xl text-gray-400 hover:text-yellow-400 transition-colors" data-rating="5">
+                                    <i class="far fa-star"></i>
+                                </button>
+                            </div>
+                            <input type="hidden" id="stars" name="stars" required>
+                        </div>
+                        <div>
+                            <label for="descript" class="block text-sm font-medium text-gray-300 mb-2">Your Review</label>
+                            <textarea id="descript" name="descript" rows="4" required
+                                class="w-full bg-dark-800 border border-dark-700 rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                                placeholder="Share your experience with this doctor..."></textarea>
+                        </div>
+                        <button type="submit" class="w-full bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+                            <i class="fas fa-paper-plane mr-2"></i>
+                            Submit Review
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Rating stars interaction
+        document.querySelectorAll('.rating-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const rating = this.dataset.rating;
+                document.getElementById('stars').value = rating;
+                
+                // Update star icons
+                document.querySelectorAll('.rating-btn').forEach(star => {
+                    if (star.dataset.rating <= rating) {
+                        star.innerHTML = '<i class="fas fa-star"></i>';
+                    } else {
+                        star.innerHTML = '<i class="far fa-star"></i>';
+                    }
+                });
+            });
+        });
+
+        $(document).ready(function() {
+            function checkNotifications() {
+                $.get('/notifications/unread', function(notifications) {
+                    const badge = $('#notification-badge');
+                    if (notifications && notifications.length > 0) {
+                        badge.text(notifications.length).removeClass('hidden');
+                    } else {
+                        badge.addClass('hidden');
+                    }
+                });
+            }
+
+            // Check notifications every 30 seconds
+            setInterval(checkNotifications, 30000);
+            checkNotifications();
+        });
+    </script>
+</body>
+</html>

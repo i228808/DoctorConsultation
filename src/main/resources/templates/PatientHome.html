@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>HealthConnect - Patient Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        },
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-in-out',
+                        'slide-in': 'slideIn 0.5s ease-in-out',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideIn: {
+                            '0%': { transform: 'translateX(-100%)' },
+                            '100%': { transform: 'translateX(0)' },
+                        },
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .dark .glass-panel {
+            background: rgba(17, 24, 39, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .hover-scale {
+            transition: transform 0.2s ease-in-out;
+        }
+        .hover-scale:hover {
+            transform: scale(1.02);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
+    <div class="flex min-h-screen">
+        <!-- Sidebar -->
+        <nav class="w-64 bg-gradient-to-b from-dark-800 to-dark-900 text-white transition-all duration-300">
+            <div class="p-6">
+                <div class="flex items-center space-x-4 mb-8">
+                    <img th:src="${Patient.profilePicture}" alt="Profile" class="w-12 h-12 rounded-full border-2 border-primary-500">
+                    <div>
+                        <h2 class="text-lg font-semibold" th:text="${Patient.firstName + ' ' + Patient.lastName}">Patient Name</h2>
+                        <p class="text-sm text-primary-300">Patient</p>
+                    </div>
+                </div>
+                <ul class="space-y-2">
+                    <li>
+                        <a href="/patients/home" class="flex items-center space-x-3 p-3 rounded-lg bg-primary-700/50 text-white hover:bg-primary-700/70 transition-colors">
+                            <i class="fas fa-home"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/doctors/searchpage" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-primary-700/50 text-white transition-colors">
+                            <i class="fas fa-search"></i>
+                            <span>Find Doctors</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/prescriptions" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-primary-700/50 text-white transition-colors">
+                            <i class="fas fa-file-prescription"></i>
+                            <span>Prescriptions</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/patients/view-health-goals" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-primary-700/50 text-white transition-colors">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Health Goals</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/patients/manage-profile" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-primary-700/50 text-white transition-colors">
+                            <i class="fas fa-user-cog"></i>
+                            <span>Manage Profile</span>
+                        </a>
+                    </li>
+                </ul>
+                
+                <!-- Logout Button -->
+                <div class="mt-auto pt-8">
+                    <a href="/logout" class="flex items-center space-x-3 p-3 rounded-lg bg-red-600/20 hover:bg-red-600/30 text-red-200 transition-colors">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-8 animate-fade-in">
+            <div class="flex justify-between items-center mb-8">
+                <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Welcome Back!</h1>
+                <button id="toggleDarkMode" class="p-2 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
+                    <i class="fas fa-moon dark:hidden"></i>
+                    <i class="fas fa-sun hidden dark:block"></i>
+                </button>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="glass-panel p-6 rounded-xl hover-scale">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">Upcoming Appointments</p>
+                            <h3 class="text-2xl font-bold text-gray-900 dark:text-white" th:text="${appointments != null ? appointments.size() : 0}">0</h3>
+                        </div>
+                        <div class="p-3 bg-primary-100 dark:bg-primary-900 rounded-full">
+                            <i class="fas fa-calendar-check text-primary-600 dark:text-primary-400"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-panel p-6 rounded-xl hover-scale">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">Active Prescriptions</p>
+                            <h3 class="text-2xl font-bold text-gray-900 dark:text-white" th:text="${Patient != null && Patient.prescriptions != null ? Patient.prescriptions.size() : 0}">0</h3>
+                        </div>
+                        <div class="p-3 bg-green-100 dark:bg-green-900 rounded-full">
+                            <i class="fas fa-file-prescription text-green-600 dark:text-green-400"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-panel p-6 rounded-xl hover-scale">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">Health Goals</p>
+                            <h3 class="text-2xl font-bold text-gray-900 dark:text-white" th:text="${Patient != null && Patient.healthGoals != null ? Patient.healthGoals.size() : 0}">0</h3>
+                        </div>
+                        <div class="p-3 bg-purple-100 dark:bg-purple-900 rounded-full">
+                            <i class="fas fa-bullseye text-purple-600 dark:text-purple-400"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Upcoming Appointments -->
+            <div class="glass-panel p-6 rounded-xl mb-8">
+                <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-6">Upcoming Appointments</h2>
+                <div class="space-y-4">
+                    <div th:if="${appointments != null && !appointments.empty}" th:each="appointment, iStat : ${appointments}" class="flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg hover-scale">
+                        <div class="flex items-center space-x-4">
+                            <img th:if="${doctors != null && doctors[iStat.index] != null && doctors[iStat.index].profilePicture != null}" 
+                                 th:src="${doctors[iStat.index].profilePicture}" 
+                                 alt="Doctor" 
+                                 class="w-12 h-12 rounded-full">
+                            <div th:if="${doctors != null && doctors[iStat.index] != null}">
+                                <h3 class="font-semibold text-gray-900 dark:text-white" 
+                                    th:text="${doctors[iStat.index].firstName + ' ' + doctors[iStat.index].lastName}">Dr. Name</h3>
+                                <p class="text-sm text-gray-600 dark:text-gray-400" 
+                                   th:text="${doctors[iStat.index].specialization}">Specialization</p>
+                            </div>
+                            <div th:unless="${doctors != null && doctors[iStat.index] != null}">
+                                <p class="text-gray-600 dark:text-gray-400">Doctor information not available</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-medium text-gray-900 dark:text-white" th:text="${appointment.apptDate}">Date</p>
+                            <p class="text-sm text-gray-600 dark:text-gray-400" th:text="${appointment.apptTime}">Time</p>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button class="p-2 text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300" data-toggle="modal" th:data-target="'#updateModal' + ${iStat.index}">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="p-2 text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300" data-toggle="modal" th:data-target="'#cancelModal' + ${iStat.index}">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div th:unless="${appointments != null && !appointments.empty}" class="text-center py-8">
+                        <p class="text-gray-600 dark:text-gray-400">No upcoming appointments</p>
+                        <a href="/doctors/searchpage" class="inline-block mt-4 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">
+                            Find a Doctor
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Medical Records -->
+            <div class="glass-panel p-6 rounded-xl">
+                <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-6">Recent Medical Records</h2>
+                <div class="space-y-4">
+                    <div th:if="${Patient != null && Patient.medicalRecords != null && !Patient.medicalRecords.empty}" th:each="record : ${Patient.medicalRecords}" class="p-4 bg-white dark:bg-gray-800 rounded-lg hover-scale">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="font-semibold text-gray-900 dark:text-white" th:text="${record.descript}">Record Description</h3>
+                                <p class="text-sm text-gray-600 dark:text-gray-400" th:text="${record.recordDate}">Date</p>
+                            </div>
+                            <button class="p-2 text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div th:unless="${Patient != null && Patient.medicalRecords != null && !Patient.medicalRecords.empty}" class="text-center py-8">
+                        <p class="text-gray-600 dark:text-gray-400">No medical records available</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <div th:each="appointment, iStat : ${appointments}">
+        <!-- Update Appointment Modal -->
+        <div th:id="'updateModal' + ${iStat.index}" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+            <div class="glass-panel p-6 rounded-xl max-w-md w-full mx-4 transform transition-all duration-300 scale-95 opacity-0" th:id="'updateModalContent' + ${iStat.index}">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-semibold text-white">
+                        <i class="fas fa-calendar-edit text-primary-400 mr-2"></i>
+                        Reschedule Appointment
+                    </h2>
+                    <button type="button" class="text-gray-400 hover:text-white" th:onclick="'closeModal(\'' + ${iStat.index} + '\', \'update\')'">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <form th:action="@{/appointments/update}" method="post" class="space-y-4">
+                    <input type="hidden" name="appointmentId" th:value="${appointment.apptId}">
+                    <input type="hidden" name="userId" th:value="${userId}">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">New Date</label>
+                        <input type="date" name="newDate" required 
+                               class="w-full px-3 py-2 bg-dark-800 border border-dark-600 rounded-lg focus:ring-2 focus:ring-primary-500 text-white placeholder-gray-400"
+                               min="[[${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}]]">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">New Time</label>
+                        <input type="time" name="newTime" required 
+                               class="w-full px-3 py-2 bg-dark-800 border border-dark-600 rounded-lg focus:ring-2 focus:ring-primary-500 text-white placeholder-gray-400">
+                    </div>
+                    <div class="flex justify-end space-x-4 mt-6">
+                        <button type="button" class="px-4 py-2 bg-dark-700 text-gray-300 rounded-lg hover:bg-dark-600 transition-colors" th:onclick="'closeModal(\'' + ${iStat.index} + '\', \'update\')'">
+                            Cancel
+                        </button>
+                        <button type="submit" class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">
+                            Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Cancel Appointment Modal -->
+        <div th:id="'cancelModal' + ${iStat.index}" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+            <div class="glass-panel p-6 rounded-xl max-w-md w-full mx-4 transform transition-all duration-300 scale-95 opacity-0" th:id="'cancelModalContent' + ${iStat.index}">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-semibold text-white">
+                        <i class="fas fa-calendar-times text-red-400 mr-2"></i>
+                        Cancel Appointment
+                    </h2>
+                    <button type="button" class="text-gray-400 hover:text-white" th:onclick="'closeModal(\'' + ${iStat.index} + '\', \'cancel\')'">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="mb-6">
+                    <p class="text-gray-300">Are you sure you want to cancel this appointment?</p>
+                    <div class="mt-2 p-3 bg-dark-800 rounded-lg">
+                        <p class="text-sm text-gray-400">Doctor: <span class="text-white" th:text="${appointment.doctor.firstName + ' ' + appointment.doctor.lastName}"></span></p>
+                        <p class="text-sm text-gray-400">Date: <span class="text-white" th:text="${appointment.apptDate}"></span></p>
+                        <p class="text-sm text-gray-400">Time: <span class="text-white" th:text="${appointment.apptTime}"></span></p>
+                    </div>
+                </div>
+                <div class="flex justify-end space-x-4">
+                    <button type="button" class="px-4 py-2 bg-dark-700 text-gray-300 rounded-lg hover:bg-dark-600 transition-colors" th:onclick="'closeModal(\'' + ${iStat.index} + '\', \'cancel\')'">
+                        No, Keep It
+                    </button>
+                    <form th:action="@{/appointments/cancel}" method="post" class="inline">
+                        <input type="hidden" name="appointmentId" th:value="${appointment.apptId}">
+                        <input type="hidden" name="userId" th:value="${userId}">
+                        <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
+                            Yes, Cancel
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script>
+        // Dark mode toggle
+        const darkModeToggle = document.getElementById('toggleDarkMode');
+        const html = document.documentElement;
+        
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            html.classList.add('dark');
+        } else {
+            html.classList.remove('dark');
+        }
+
+        darkModeToggle.addEventListener('click', () => {
+            html.classList.toggle('dark');
+            localStorage.theme = html.classList.contains('dark') ? 'dark' : 'light';
+        });
+
+        // Add animation to cards on scroll
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate-fade-in');
+                }
+            });
+        });
+
+        document.querySelectorAll('.glass-panel').forEach((el) => observer.observe(el));
+
+        // Modal functions
+        function showModal(index, type) {
+            const modal = document.getElementById(type + 'Modal' + index);
+            const modalContent = document.getElementById(type + 'ModalContent' + index);
+            
+            // Show modal with animation
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            
+            // Trigger reflow
+            modalContent.offsetHeight;
+            
+            // Add animation classes
+            modalContent.classList.remove('scale-95', 'opacity-0');
+            
+            // Add click outside listener
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    closeModal(index, type);
+                }
+            });
+        }
+
+        function closeModal(index, type) {
+            const modal = document.getElementById(type + 'Modal' + index);
+            const modalContent = document.getElementById(type + 'ModalContent' + index);
+            
+            // Add animation classes
+            modalContent.classList.add('scale-95', 'opacity-0');
+            
+            // Wait for animation to complete before hiding
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }, 300);
+        }
+
+        // Update click handlers for appointment buttons
+        document.querySelectorAll('[data-toggle="modal"]').forEach(button => {
+            button.addEventListener('click', (e) => {
+                e.preventDefault();
+                const target = button.getAttribute('data-target');
+                const index = target.match(/\d+$/)[0];
+                const type = target.includes('update') ? 'update' : 'cancel';
+                showModal(index, type);
+            });
+        });
+    </script>
+</body>
+</html>
