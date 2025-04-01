@@ -143,12 +143,13 @@
                             <div th:each="prescription : ${prescriptions}" class="glass-panel p-4 rounded-lg hover-scale">
                                 <div class="flex justify-between items-start mb-4">
                                     <div>
-                                        <h3 class="text-lg font-semibold text-white" th:text="${prescription.medication}">Medication Name</h3>
+                                        <h3 class="text-lg font-semibold text-white" th:text="${prescription.medicationDetails}">Medication Details</h3>
                                         <p class="text-sm text-gray-400" th:text="${prescription.doctor != null ? 'Prescribed by Dr. ' + prescription.doctor.firstName + ' ' + prescription.doctor.lastName : 'Prescribed by Unknown Doctor'}">Doctor Name</p>
                                     </div>
-                                    <span th:class="${prescription.endDate.isAfter(#temporals.createNow()) ? 'bg-green-900/30 text-green-300' : 'bg-red-900/30 text-red-300'}"
+                                    <span th:if="${prescription.dateUntil != null}" 
+                                          th:class="${#temporals.isAfter(prescription.dateUntil, #temporals.createNow()) ? 'bg-green-900/30 text-green-300' : 'bg-red-900/30 text-red-300'}"
                                           class="px-3 py-1 rounded-full text-sm font-medium">
-                                        <span th:text="${prescription.endDate.isAfter(#temporals.createNow()) ? 'Active' : 'Expired'}">Status</span>
+                                        <span th:text="${#temporals.isAfter(prescription.dateUntil, #temporals.createNow()) ? 'Active' : 'Expired'}">Status</span>
                                     </span>
                                 </div>
                                 <div class="grid grid-cols-2 gap-4 mb-4">
@@ -158,7 +159,9 @@
                                     </div>
                                     <div>
                                         <p class="text-sm text-gray-400">Duration</p>
-                                        <p class="text-white" th:text="${prescription.startDate + ' to ' + prescription.endDate}">Duration</p>
+                                        <p class="text-white" th:text="${prescription.dateIssued != null && prescription.dateUntil != null ? 
+                                            #temporals.format(prescription.dateIssued, 'MMM dd, yyyy') + ' to ' + 
+                                            #temporals.format(prescription.dateUntil, 'MMM dd, yyyy') : 'N/A'}">Duration</p>
                                     </div>
                                 </div>
                                 <div>
