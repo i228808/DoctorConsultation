@@ -1,83 +1,129 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Appointments - Doctor Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script>
         tailwind.config = {
             darkMode: 'class',
             theme: {
                 extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
                     colors: {
-                        primary: '#3B82F6',
-                        secondary: '#10B981',
-                        dark: '#1F2937',
-                        'dark-light': '#374151',
-                        'dark-lighter': '#4B5563'
-                    }
-                }
-            }
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        },
+                        dark: {
+                            50: '#f9fafb',
+                            100: '#f3f4f6',
+                            200: '#e5e7eb',
+                            300: '#d1d5db',
+                            400: '#9ca3af',
+                            500: '#6b7280',
+                            600: '#4b5563',
+                            700: '#374151',
+                            800: '#1f2937',
+                            900: '#111827',
+                        },
+                    },
+                },
+            },
         }
     </script>
+    <style>
+        .glass-panel {
+            background: rgba(17, 24, 39, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .hover-scale {
+            transition: transform 0.2s ease-in-out;
+        }
+        .hover-scale:hover {
+            transform: scale(1.02);
+        }
+    </style>
 </head>
-<body class="bg-gray-100 dark:bg-gray-900">
-    <div class="flex h-screen">
+<body class="bg-dark-900 text-gray-100 min-h-screen">
+    <div class="flex min-h-screen">
         <!-- Sidebar -->
-        <div class="w-64 bg-white dark:bg-gray-800 shadow-lg">
-            <div class="p-4">
-                <h2 class="text-2xl font-bold text-gray-800 dark:text-white">DCC</h2>
-            </div>
-            <nav class="mt-4">
-                <a href="/doctors/dashboard" class="flex items-center px-6 py-3 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
-                    <i class="fas fa-home w-6"></i>
-                    <span>Dashboard</span>
-                </a>
-                <a href="/doctors/my-patients" class="flex items-center px-6 py-3 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
-                    <i class="fas fa-users w-6"></i>
-                    <span>My Patients</span>
-                </a>
-                <a href="/doctors/myappointments" class="flex items-center px-6 py-3 bg-gray-100 dark:bg-gray-700 text-primary dark:text-blue-400">
-                    <i class="fas fa-calendar-alt w-6"></i>
-                    <span>Appointments</span>
-                </a>
-                <a href="/doctors/manage-profile" class="flex items-center px-6 py-3 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
-                    <i class="fas fa-user-md w-6"></i>
-                    <span>Manage Profile</span>
-                </a>
-                <a href="/logout" class="flex items-center px-6 py-3 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20">
-                    <i class="fas fa-sign-out-alt w-6"></i>
-                    <span>Logout</span>
-                </a>
-            </nav>
-        </div>
-
-        <!-- Main Content -->
-        <div class="flex-1 overflow-auto">
-            <div class="p-8">
-                <div class="flex justify-between items-center mb-8">
-                    <h1 class="text-3xl font-bold text-gray-800 dark:text-white">My Appointments</h1>
-                    <div class="flex space-x-4">
-                        <button onclick="document.getElementById('newAppointmentModal').classList.remove('hidden')" 
-                                class="bg-primary hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center">
-                            <i class="fas fa-plus mr-2"></i>
-                            New Appointment
-                        </button>
+        <nav class="w-64 bg-gradient-to-b from-dark-800 to-dark-900 text-white transition-all duration-300">
+            <div class="p-6">
+                <div class="flex items-center space-x-4 mb-8">
+                    <img th:src="${doctor != null ? doctor.profilePicture : '/images/default-avatar.png'}" alt="Profile" class="w-12 h-12 rounded-full border-2 border-primary-500">
+                    <div>
+                        <h2 class="text-lg font-semibold" th:text="${doctor != null ? doctor.firstName + ' ' + doctor.lastName : 'Doctor'}">Doctor Name</h2>
+                        <p class="text-sm text-primary-300" th:text="${doctor != null ? doctor.specialization : 'Specialization'}">Specialization</p>
                     </div>
                 </div>
+                <ul class="space-y-2">
+                    <li>
+                        <a href="/doctors/dashboard" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-primary-700/50 text-white transition-colors">
+                            <i class="fas fa-home"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/patients/my-patients" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-primary-700/50 text-white transition-colors">
+                            <i class="fas fa-users"></i>
+                            <span>My Patients</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/doctors/myappointments" class="flex items-center space-x-3 p-3 rounded-lg bg-primary-700/50 text-white">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>Appointments</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/doctors/manage-profile" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-primary-700/50 text-white transition-colors">
+                            <i class="fas fa-user-md"></i>
+                            <span>Manage Profile</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/logout" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-red-700/50 text-red-300 transition-colors">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Logout</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-8">
+            <div class="max-w-7xl mx-auto">
+                <h1 class="text-3xl font-bold text-white mb-8">
+                    <i class="fas fa-calendar-alt text-primary-400 mr-3"></i>
+                    My Appointments
+                </h1>
 
                 <!-- Tabs -->
                 <div class="mb-6">
-                    <div class="border-b border-gray-200 dark:border-gray-700">
+                    <div class="border-b border-gray-700">
                         <nav class="-mb-px flex space-x-8">
                             <button onclick="showTab('upcoming')" 
-                                    class="tab-button border-b-2 border-primary text-primary py-4 px-1 text-sm font-medium">
+                                    class="tab-button border-b-2 border-primary-500 text-primary-400 py-4 px-1 text-sm font-medium">
                                 Upcoming Appointments
                             </button>
                             <button onclick="showTab('past')" 
-                                    class="tab-button border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 py-4 px-1 text-sm font-medium">
+                                    class="tab-button border-b-2 border-transparent text-gray-400 hover:text-gray-300 py-4 px-1 text-sm font-medium">
                                 Past Appointments
                             </button>
                         </nav>
@@ -87,22 +133,22 @@
                 <!-- Upcoming Appointments -->
                 <div id="upcomingTab" class="space-y-4">
                     <div th:each="appointment : ${upcomingAppointments}" 
-                         class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-200">
+                         class="glass-panel p-6 rounded-xl hover-scale">
                         <div class="flex justify-between items-start">
                             <div>
-                                <h3 class="text-lg font-semibold text-gray-800 dark:text-white" th:text="${appointment.patient.firstName + ' ' + appointment.patient.lastName}">Patient Name</h3>
-                                <p class="text-gray-600 dark:text-gray-300" th:text="${appointment.patient.email}">patient@example.com</p>
+                                <h3 class="text-lg font-semibold text-white" th:text="${appointment.patient.firstName + ' ' + appointment.patient.lastName}">Patient Name</h3>
+                                <p class="text-gray-400" th:text="${appointment.patient.email}">patient@example.com</p>
                             </div>
                             <div class="text-right">
-                                <p class="text-gray-600 dark:text-gray-300" th:text="${#temporals.format(appointment.apptDate, 'MMM dd, yyyy')}">Date</p>
-                                <p class="text-gray-600 dark:text-gray-300" th:text="${#temporals.format(appointment.apptTime, 'hh:mm a')}">Time</p>
+                                <p class="text-gray-400" th:text="${#temporals.format(appointment.apptDate, 'MMM dd, yyyy')}">Date</p>
+                                <p class="text-gray-400" th:text="${#temporals.format(appointment.apptTime, 'hh:mm a')}">Time</p>
                             </div>
                         </div>
                         <div class="mt-4 flex justify-between items-center">
                             <div class="flex space-x-2">
-                                <span th:class="${appointment.canceled ? 'bg-red-100 text-red-800' : 
-                                               appointment.rescheduled ? 'bg-yellow-100 text-yellow-800' : 
-                                               'bg-green-100 text-green-800'}"
+                                <span th:class="${appointment.canceled ? 'bg-red-900/50 text-red-200' : 
+                                               appointment.rescheduled ? 'bg-yellow-900/50 text-yellow-200' : 
+                                               'bg-green-900/50 text-green-200'}"
                                       class="px-2 py-1 rounded-full text-xs font-medium"
                                       th:text="${appointment.canceled ? 'CANCELLED' : 
                                                appointment.rescheduled ? 'RESCHEDULED' : 
@@ -111,17 +157,17 @@
                             <div class="flex space-x-2">
                                 <button onclick="viewAppointmentDetails(this)" 
                                         th:data-appointment-id="${appointment.apptId}"
-                                        class="text-primary hover:text-blue-600">
+                                        class="text-primary-400 hover:text-primary-300 transition-colors duration-200">
                                     <i class="fas fa-eye"></i>
                                 </button>
                                 <button onclick="updateAppointment(this)" 
                                         th:data-appointment-id="${appointment.apptId}"
-                                        class="text-blue-500 hover:text-blue-600">
+                                        class="text-blue-400 hover:text-blue-300 transition-colors duration-200">
                                     <i class="fas fa-edit"></i>
                                 </button>
                                 <button onclick="cancelAppointment(this)" 
                                         th:data-appointment-id="${appointment.apptId}"
-                                        class="text-red-500 hover:text-red-600">
+                                        class="text-red-400 hover:text-red-300 transition-colors duration-200">
                                     <i class="fas fa-times"></i>
                                 </button>
                             </div>
@@ -132,22 +178,22 @@
                 <!-- Past Appointments -->
                 <div id="pastTab" class="hidden space-y-4">
                     <div th:each="appointment : ${pastAppointments}" 
-                         class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-200">
+                         class="glass-panel p-6 rounded-xl hover-scale">
                         <div class="flex justify-between items-start">
                             <div>
-                                <h3 class="text-lg font-semibold text-gray-800 dark:text-white" th:text="${appointment.patient.firstName + ' ' + appointment.patient.lastName}">Patient Name</h3>
-                                <p class="text-gray-600 dark:text-gray-300" th:text="${appointment.patient.email}">patient@example.com</p>
+                                <h3 class="text-lg font-semibold text-white" th:text="${appointment.patient.firstName + ' ' + appointment.patient.lastName}">Patient Name</h3>
+                                <p class="text-gray-400" th:text="${appointment.patient.email}">patient@example.com</p>
                             </div>
                             <div class="text-right">
-                                <p class="text-gray-600 dark:text-gray-300" th:text="${#temporals.format(appointment.apptDate, 'MMM dd, yyyy')}">Date</p>
-                                <p class="text-gray-600 dark:text-gray-300" th:text="${#temporals.format(appointment.apptTime, 'hh:mm a')}">Time</p>
+                                <p class="text-gray-400" th:text="${#temporals.format(appointment.apptDate, 'MMM dd, yyyy')}">Date</p>
+                                <p class="text-gray-400" th:text="${#temporals.format(appointment.apptTime, 'hh:mm a')}">Time</p>
                             </div>
                         </div>
                         <div class="mt-4 flex justify-between items-center">
                             <div class="flex space-x-2">
-                                <span th:class="${appointment.canceled ? 'bg-red-100 text-red-800' : 
-                                               appointment.rescheduled ? 'bg-yellow-100 text-yellow-800' : 
-                                               'bg-green-100 text-green-800'}"
+                                <span th:class="${appointment.canceled ? 'bg-red-900/50 text-red-200' : 
+                                               appointment.rescheduled ? 'bg-yellow-900/50 text-yellow-200' : 
+                                               'bg-green-900/50 text-green-200'}"
                                       class="px-2 py-1 rounded-full text-xs font-medium"
                                       th:text="${appointment.canceled ? 'CANCELLED' : 
                                                appointment.rescheduled ? 'RESCHEDULED' : 
@@ -156,12 +202,12 @@
                             <div class="flex space-x-2">
                                 <button onclick="viewAppointmentDetails(this)" 
                                         th:data-appointment-id="${appointment.apptId}"
-                                        class="text-primary hover:text-blue-600">
+                                        class="text-primary-400 hover:text-primary-300 transition-colors duration-200">
                                     <i class="fas fa-eye"></i>
                                 </button>
                                 <button onclick="createPrescription(this)" 
                                         th:data-appointment-id="${appointment.apptId}"
-                                        class="text-green-500 hover:text-green-600">
+                                        class="text-green-400 hover:text-green-300 transition-colors duration-200">
                                     <i class="fas fa-prescription"></i>
                                 </button>
                             </div>
@@ -169,15 +215,15 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </main>
     </div>
 
     <!-- View Appointment Modal -->
-    <div id="viewAppointmentModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center">
-        <div class="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-2xl w-full mx-4 shadow-xl">
+    <div id="viewAppointmentModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center backdrop-blur-sm">
+        <div class="glass-panel rounded-xl p-6 max-w-2xl w-full mx-4">
             <div class="flex justify-between items-center mb-4">
-                <h2 class="text-2xl font-bold text-gray-800 dark:text-white">Appointment Details</h2>
-                <button onclick="closeModal('viewAppointmentModal')" class="text-gray-500 hover:text-gray-700">
+                <h2 class="text-2xl font-bold text-white">Appointment Details</h2>
+                <button onclick="closeModal('viewAppointmentModal')" class="text-gray-400 hover:text-gray-300 transition-colors duration-200">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
@@ -188,30 +234,30 @@
     </div>
 
     <!-- Update Appointment Modal -->
-    <div id="updateAppointmentModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center">
-        <div class="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-2xl w-full mx-4 shadow-xl">
+    <div id="updateAppointmentModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center backdrop-blur-sm">
+        <div class="glass-panel rounded-xl p-6 max-w-2xl w-full mx-4">
             <div class="flex justify-between items-center mb-4">
-                <h2 class="text-2xl font-bold text-gray-800 dark:text-white">Update Appointment</h2>
-                <button onclick="closeModal('updateAppointmentModal')" class="text-gray-500 hover:text-gray-700">
+                <h2 class="text-2xl font-bold text-white">Update Appointment</h2>
+                <button onclick="closeModal('updateAppointmentModal')" class="text-gray-400 hover:text-gray-300 transition-colors duration-200">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
             <form id="updateAppointmentForm" class="space-y-4">
                 <input type="hidden" id="updateAppointmentId" name="id">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Date</label>
+                    <label class="block text-sm font-medium text-gray-300">Date</label>
                     <input type="date" id="updateDate" name="date" required
-                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary">
+                           class="mt-1 block w-full rounded-md bg-dark-800 border-gray-700 text-white shadow-sm focus:border-primary-500 focus:ring-primary-500">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Time</label>
+                    <label class="block text-sm font-medium text-gray-300">Time</label>
                     <input type="time" id="updateTime" name="time" required
-                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary">
+                           class="mt-1 block w-full rounded-md bg-dark-800 border-gray-700 text-white shadow-sm focus:border-primary-500 focus:ring-primary-500">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Status</label>
+                    <label class="block text-sm font-medium text-gray-300">Status</label>
                     <select id="updateStatus" name="status" required
-                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary">
+                            class="mt-1 block w-full rounded-md bg-dark-800 border-gray-700 text-white shadow-sm focus:border-primary-500 focus:ring-primary-500">
                         <option value="PENDING">Pending</option>
                         <option value="CONFIRMED">Confirmed</option>
                         <option value="CANCELLED">Cancelled</option>
@@ -220,11 +266,11 @@
                 </div>
                 <div class="flex justify-end space-x-3">
                     <button type="button" onclick="closeModal('updateAppointmentModal')"
-                            class="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200">
+                            class="px-4 py-2 text-gray-300 bg-dark-800 rounded-lg hover:bg-dark-700 transition-colors duration-200">
                         Cancel
                     </button>
                     <button type="submit"
-                            class="px-4 py-2 text-white bg-primary rounded-lg hover:bg-blue-600">
+                            class="px-4 py-2 text-white bg-primary-600 rounded-lg hover:bg-primary-700 transition-colors duration-200">
                         Update
                     </button>
                 </div>
@@ -233,29 +279,29 @@
     </div>
 
     <!-- Cancel Appointment Modal -->
-    <div id="cancelAppointmentModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center">
-        <div class="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4 shadow-xl">
+    <div id="cancelAppointmentModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center backdrop-blur-sm">
+        <div class="glass-panel rounded-xl p-6 max-w-md w-full mx-4">
             <div class="flex justify-between items-center mb-4">
-                <h2 class="text-2xl font-bold text-gray-800 dark:text-white">Cancel Appointment</h2>
-                <button onclick="closeModal('cancelAppointmentModal')" class="text-gray-500 hover:text-gray-700">
+                <h2 class="text-2xl font-bold text-white">Cancel Appointment</h2>
+                <button onclick="closeModal('cancelAppointmentModal')" class="text-gray-400 hover:text-gray-300 transition-colors duration-200">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
-            <p class="text-gray-600 dark:text-gray-300 mb-4">Are you sure you want to cancel this appointment?</p>
+            <p class="text-gray-400 mb-4">Are you sure you want to cancel this appointment?</p>
             <form id="cancelAppointmentForm" class="space-y-4">
                 <input type="hidden" id="cancelAppointmentId" name="id">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Reason for Cancellation</label>
+                    <label class="block text-sm font-medium text-gray-300">Reason for Cancellation</label>
                     <textarea id="cancelReason" name="reason" required
-                              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary"></textarea>
+                              class="mt-1 block w-full rounded-md bg-dark-800 border-gray-700 text-white shadow-sm focus:border-primary-500 focus:ring-primary-500"></textarea>
                 </div>
                 <div class="flex justify-end space-x-3">
                     <button type="button" onclick="closeModal('cancelAppointmentModal')"
-                            class="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200">
+                            class="px-4 py-2 text-gray-300 bg-dark-800 rounded-lg hover:bg-dark-700 transition-colors duration-200">
                         No, Keep It
                     </button>
                     <button type="submit"
-                            class="px-4 py-2 text-white bg-red-500 rounded-lg hover:bg-red-600">
+                            class="px-4 py-2 text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors duration-200">
                         Yes, Cancel
                     </button>
                 </div>
@@ -264,43 +310,43 @@
     </div>
 
     <!-- Create Prescription Modal -->
-    <div id="createPrescriptionModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center">
-        <div class="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-2xl w-full mx-4 shadow-xl">
+    <div id="createPrescriptionModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center backdrop-blur-sm">
+        <div class="glass-panel rounded-xl p-6 max-w-2xl w-full mx-4">
             <div class="flex justify-between items-center mb-4">
-                <h2 class="text-2xl font-bold text-gray-800 dark:text-white">Create Prescription</h2>
-                <button onclick="closeModal('createPrescriptionModal')" class="text-gray-500 hover:text-gray-700">
+                <h2 class="text-2xl font-bold text-white">Create Prescription</h2>
+                <button onclick="closeModal('createPrescriptionModal')" class="text-gray-400 hover:text-gray-300 transition-colors duration-200">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
             <form id="createPrescriptionForm" class="space-y-4">
                 <input type="hidden" id="prescriptionAppointmentId" name="appointmentId">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Diagnosis</label>
+                    <label class="block text-sm font-medium text-gray-300">Diagnosis</label>
                     <textarea id="diagnosis" name="diagnosis" required
-                              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary"></textarea>
+                              class="mt-1 block w-full rounded-md bg-dark-800 border-gray-700 text-white shadow-sm focus:border-primary-500 focus:ring-primary-500"></textarea>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Medications</label>
+                    <label class="block text-sm font-medium text-gray-300">Medications</label>
                     <div id="medicationsList" class="space-y-2">
                         <!-- Medication entries will be added here -->
                     </div>
                     <button type="button" onclick="addMedicationEntry()"
-                            class="mt-2 text-primary hover:text-blue-600">
+                            class="mt-2 text-primary-400 hover:text-primary-300 transition-colors duration-200">
                         <i class="fas fa-plus"></i> Add Medication
                     </button>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Notes</label>
+                    <label class="block text-sm font-medium text-gray-300">Notes</label>
                     <textarea id="notes" name="notes"
-                              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary"></textarea>
+                              class="mt-1 block w-full rounded-md bg-dark-800 border-gray-700 text-white shadow-sm focus:border-primary-500 focus:ring-primary-500"></textarea>
                 </div>
                 <div class="flex justify-end space-x-3">
                     <button type="button" onclick="closeModal('createPrescriptionModal')"
-                            class="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200">
+                            class="px-4 py-2 text-gray-300 bg-dark-800 rounded-lg hover:bg-dark-700 transition-colors duration-200">
                         Cancel
                     </button>
                     <button type="submit"
-                            class="px-4 py-2 text-white bg-primary rounded-lg hover:bg-blue-600">
+                            class="px-4 py-2 text-white bg-primary-600 rounded-lg hover:bg-primary-700 transition-colors duration-200">
                         Create Prescription
                     </button>
                 </div>
@@ -315,11 +361,11 @@
             
             // Update tab button styles
             document.querySelectorAll('.tab-button').forEach(button => {
-                button.classList.remove('border-primary', 'text-primary');
-                button.classList.add('border-transparent', 'text-gray-500');
+                button.classList.remove('border-primary-500', 'text-primary-400');
+                button.classList.add('border-transparent', 'text-gray-400');
             });
-            event.target.classList.remove('border-transparent', 'text-gray-500');
-            event.target.classList.add('border-primary', 'text-primary');
+            event.target.classList.remove('border-transparent', 'text-gray-400');
+            event.target.classList.add('border-primary-500', 'text-primary-400');
         }
 
         function openModal(modalId) {
