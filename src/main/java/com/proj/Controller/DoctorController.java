@@ -5,12 +5,18 @@ import com.proj.Bean.Appointment;
 import com.proj.Bean.Doctor;
 import com.proj.Bean.Patient;
 import com.proj.Bean.Rating;
+import com.proj.Bean.MedicalRecord;
+import com.proj.Bean.Prescription;
+import com.proj.Bean.HealthGoal;
 
 // Service Imports
 import com.proj.Service.AppointmentService;
 import com.proj.Service.DoctorService;
 import com.proj.Service.PatientService;
 import com.proj.Service.RatingService;
+import com.proj.Service.HealthGoalService;
+import com.proj.Service.MedicalRecordService;
+import com.proj.Service.PrescriptionService;
 
 // Servlet Import
 import jakarta.servlet.http.HttpSession;
@@ -43,6 +49,12 @@ public class DoctorController {
     private AppointmentService appointmentService;
     @Autowired
     private PatientService patientService;
+    @Autowired
+    private HealthGoalService healthGoalService;
+    @Autowired
+    private MedicalRecordService medicalRecordService;
+    @Autowired
+    private PrescriptionService prescriptionService;
 
     // Create a new doctor
     @PostMapping
@@ -226,6 +238,8 @@ public class DoctorController {
         Object user = session.getAttribute("currentUser");
         if (user instanceof Doctor) {
             Doctor doctor = (Doctor) user;
+            model.addAttribute("doctor", doctor);
+
             List<Appointment> pastAppointments = new ArrayList<>();
             List<Appointment> upcomingAppointments = new ArrayList<>();
 
@@ -244,6 +258,32 @@ public class DoctorController {
             return "myAppointments";
         }
         return "redirect:/";
+    }
+
+    @GetMapping("/my-patients")
+    public String getMyPatients(HttpSession session, Model model) {
+        Object user = session.getAttribute("currentUser");
+        if (user instanceof Doctor) {
+            Doctor doctor = (Doctor) user;
+            model.addAttribute("doctor", doctor);
+
+            // Get unique patients from appointments
+            List<Patient> patients = new ArrayList<>();
+            doctor.getAppointments().forEach(appointment -> {
+                if (!patients.contains(appointment.getPatient())) {
+                    patients.add(appointment.getPatient());
+                }
+            });
+
+            model.addAttribute("patients", patients);
+            return "myPatients";
+        }
+        return "redirect:/login";
+    }
+
+    @GetMapping("/")
+    public String root() {
+        return "redirect:/login";
     }
 
     @GetMapping("/manage-profile")
@@ -356,5 +396,109 @@ public class DoctorController {
             }
         }
         return "DoctorDashboard";
+    }
+
+    @GetMapping("/patient-profile/{id}")
+    public String getPatientProfile(@PathVariable int id, HttpSession session, Model model) {
+        Object user = session.getAttribute("currentUser");
+        if (user instanceof Doctor) {
+            Doctor doctor = (Doctor) user;
+            model.addAttribute("doctor", doctor);
+
+            Patient patient = patientService.getPatientById(id);
+            if (patient != null) {
+                model.addAttribute("patient", patient);
+                // Add flash attributes if they exist
+                if (model.containsAttribute("success")) {
+                    model.addAttribute("success", model.getAttribute("success"));
+                }
+                if (model.containsAttribute("error")) {
+                    model.addAttribute("error", model.getAttribute("error"));
+                }
+                return "patientProfile";
+            }
+        }
+        return "redirect:/login";
+    }
+
+    @PostMapping("/patient-profile/{id}/add-record")
+    public String addMedicalRecord(@PathVariable int id,
+            @RequestParam("descript") String descript,
+            @RequestParam("recordDate") LocalDate recordDate,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
+        Object user = session.getAttribute("currentUser");
+        if (user instanceof Doctor) {
+            Doctor doctor = (Doctor) user;
+            Patient patient = patientService.getPatientById(id);
+
+            if (patient != null) {
+                MedicalRecord record = new MedicalRecord(descript, recordDate, patient);
+                medicalRecordService.createMedicalRecord(record);
+                redirectAttributes.addFlashAttribute("success", "Medical record added successfully!");
+            } else {
+                redirectAttributes.addFlashAttribute("error", "Patient not found!");
+            }
+        }
+        return "redirect:/doctors/patient-profile/" + id;
+    }
+
+    @PostMapping("/patient-profile/{id}/add-prescription")
+    public String addPrescription(@PathVariable int id,
+            @RequestParam("medicationDetails") String medicationDetails,
+            @RequestParam("dosage") String dosage,
+            @RequestParam("dateUntil") LocalDate dateUntil,
+            @RequestParam("instructions") String instructions,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
+        try {
+            Object user = session.getAttribute("currentUser");
+            if (user instanceof Doctor) {
+                Doctor doctor = (Doctor) user;
+                Patient patient = patientService.getPatientById(id);
+
+                if (patient != null) {
+                    Prescription prescription = new Prescription(doctor, patient, medicationDetails, LocalDate.now(),
+                            dosage, dateUntil, instructions);
+                    prescriptionService.createPrescription(prescription);
+                    redirectAttributes.addFlashAttribute("success", "Prescription added successfully!");
+                } else {
+                    redirectAttributes.addFlashAttribute("error", "Patient not found!");
+                }
+            } else {
+                redirectAttributes.addFlashAttribute("error",
+                        "You must be logged in as a doctor to add prescriptions.");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            redirectAttributes.addFlashAttribute("error", "An error occurred while adding the prescription.");
+        }
+        return "redirect:/doctors/patient-profile/" + id;
+    }
+
+    @PostMapping("/patient-profile/{id}/add-health-goal")
+    public String addHealthGoal(@PathVariable int id,
+            @RequestParam("goalDescription") String goalDescription,
+            @RequestParam("targetValue") int targetValue,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
+        Object user = session.getAttribute("currentUser");
+        if (user instanceof Doctor) {
+            Doctor doctor = (Doctor) user;
+            Patient patient = patientService.getPatientById(id);
+
+            if (patient != null) {
+                HealthGoal healthGoal = new HealthGoal(doctor, patient, goalDescription, targetValue, "Pending",
+                        LocalDate.now(), LocalDate.now());
+
+                // Create the health goal using the service
+                healthGoalService.createHealthGoal(healthGoal);
+
+                redirectAttributes.addFlashAttribute("success", "Health goal added successfully!");
+            } else {
+                redirectAttributes.addFlashAttribute("error", "Patient not found!");
+            }
+        }
+        return "redirect:/doctors/patient-profile/" + id;
     }
 }

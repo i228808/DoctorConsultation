@@ -70,7 +70,7 @@
                         <h2 class="text-lg font-semibold" th:text="${doctor != null ? doctor.firstName + ' ' + doctor.lastName : 'Doctor'}">Doctor Name</h2>
                         <p class="text-sm text-primary-300" th:text="${doctor != null ? doctor.specialization : 'Specialization'}">Specialization</p>
                     </div>
-                </div>
+</div>
                 <ul class="space-y-2">
                     <li>
                         <a href="/doctors/dashboard" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-primary-700/50 text-white transition-colors">
@@ -95,14 +95,14 @@
                             <i class="fas fa-user-md"></i>
                             <span>Manage Profile</span>
                         </a>
-                    </li>
+        </li>
                     <li>
                         <a href="/logout" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-red-700/50 text-red-300 transition-colors">
                             <i class="fas fa-sign-out-alt"></i>
                             <span>Logout</span>
                         </a>
-                    </li>
-                </ul>
+        </li>
+    </ul>
             </div>
         </nav>
 
@@ -125,7 +125,7 @@
                             <button onclick="showTab('past')" 
                                     class="tab-button border-b-2 border-transparent text-gray-400 hover:text-gray-300 py-4 px-1 text-sm font-medium">
                                 Past Appointments
-                            </button>
+                                </button>
                         </nav>
                     </div>
                 </div>
@@ -142,8 +142,8 @@
                             <div class="text-right">
                                 <p class="text-gray-400" th:text="${#temporals.format(appointment.apptDate, 'MMM dd, yyyy')}">Date</p>
                                 <p class="text-gray-400" th:text="${#temporals.format(appointment.apptTime, 'hh:mm a')}">Time</p>
-                            </div>
-                        </div>
+            </div>
+        </div>
                         <div class="mt-4 flex justify-between items-center">
                             <div class="flex space-x-2">
                                 <span th:class="${appointment.canceled ? 'bg-red-900/50 text-red-200' : 
@@ -170,10 +170,10 @@
                                         class="text-red-400 hover:text-red-300 transition-colors duration-200">
                                     <i class="fas fa-times"></i>
                                 </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
                 <!-- Past Appointments -->
                 <div id="pastTab" class="hidden space-y-4">
@@ -187,7 +187,7 @@
                             <div class="text-right">
                                 <p class="text-gray-400" th:text="${#temporals.format(appointment.apptDate, 'MMM dd, yyyy')}">Date</p>
                                 <p class="text-gray-400" th:text="${#temporals.format(appointment.apptTime, 'hh:mm a')}">Time</p>
-                            </div>
+                </div>
                         </div>
                         <div class="mt-4 flex justify-between items-center">
                             <div class="flex space-x-2">
@@ -226,7 +226,7 @@
                 <button onclick="closeModal('viewAppointmentModal')" class="text-gray-400 hover:text-gray-300 transition-colors duration-200">
                     <i class="fas fa-times"></i>
                 </button>
-            </div>
+                    </div>
             <div id="appointmentDetails" class="space-y-4">
                 <!-- Details will be populated by JavaScript -->
             </div>
@@ -273,7 +273,7 @@
                             class="px-4 py-2 text-white bg-primary-600 rounded-lg hover:bg-primary-700 transition-colors duration-200">
                         Update
                     </button>
-                </div>
+            </div>
             </form>
         </div>
     </div>
@@ -286,7 +286,7 @@
                 <button onclick="closeModal('cancelAppointmentModal')" class="text-gray-400 hover:text-gray-300 transition-colors duration-200">
                     <i class="fas fa-times"></i>
                 </button>
-            </div>
+                </div>
             <p class="text-gray-400 mb-4">Are you sure you want to cancel this appointment?</p>
             <form id="cancelAppointmentForm" class="space-y-4">
                 <input type="hidden" id="cancelAppointmentId" name="id">
@@ -317,7 +317,7 @@
                 <button onclick="closeModal('createPrescriptionModal')" class="text-gray-400 hover:text-gray-300 transition-colors duration-200">
                     <i class="fas fa-times"></i>
                 </button>
-            </div>
+</div>
             <form id="createPrescriptionForm" class="space-y-4">
                 <input type="hidden" id="prescriptionAppointmentId" name="appointmentId">
                 <div>
@@ -349,8 +349,8 @@
                             class="px-4 py-2 text-white bg-primary-600 rounded-lg hover:bg-primary-700 transition-colors duration-200">
                         Create Prescription
                     </button>
-                </div>
-            </form>
+                    </div>
+                </form>
         </div>
     </div>
 
@@ -388,28 +388,36 @@
                     details.innerHTML = `
                         <div class="grid grid-cols-2 gap-4">
                             <div>
-                                <p class="text-sm text-gray-600 dark:text-gray-400">Patient Name</p>
-                                <p class="font-medium text-gray-800 dark:text-white">${data.patient.firstName + ' ' + data.patient.lastName}</p>
+                                <p class="text-sm text-gray-400">Patient Name</p>
+                                <p class="font-medium text-white">${data.patient.firstName + ' ' + data.patient.lastName}</p>
                             </div>
                             <div>
-                                <p class="text-sm text-gray-600 dark:text-gray-400">Email</p>
-                                <p class="font-medium text-gray-800 dark:text-white">${data.patient.email}</p>
+                                <p class="text-sm text-gray-400">Email</p>
+                                <p class="font-medium text-white">${data.patient.email}</p>
                             </div>
                             <div>
-                                <p class="text-sm text-gray-600 dark:text-gray-400">Date</p>
-                                <p class="font-medium text-gray-800 dark:text-white">${new Date(data.apptDate).toLocaleDateString()}</p>
+                                <p class="text-sm text-gray-400">Phone</p>
+                                <p class="font-medium text-white">${data.patient.phone || 'Not provided'}</p>
                             </div>
                             <div>
-                                <p class="text-sm text-gray-600 dark:text-gray-400">Time</p>
-                                <p class="font-medium text-gray-800 dark:text-white">${new Date(data.apptTime).toLocaleTimeString()}</p>
+                                <p class="text-sm text-gray-400">Date</p>
+                                <p class="font-medium text-white">${new Date(data.apptDate).toLocaleDateString()}</p>
                             </div>
                             <div>
-                                <p class="text-sm text-gray-600 dark:text-gray-400">Status</p>
-                                <p class="font-medium text-gray-800 dark:text-white">${data.canceled ? 'CANCELLED' : data.rescheduled ? 'RESCHEDULED' : 'CONFIRMED'}</p>
+                                <p class="text-sm text-gray-400">Time</p>
+                                <p class="font-medium text-white">${new Date(data.apptTime).toLocaleTimeString()}</p>
                             </div>
-                        </div>
+                            <div>
+                                <p class="text-sm text-gray-400">Status</p>
+                                <p class="font-medium text-white">${data.canceled ? 'CANCELLED' : data.rescheduled ? 'RESCHEDULED' : 'CONFIRMED'}</p>
+    </div>
+</div>
                     `;
                     openModal('viewAppointmentModal');
+                })
+                .catch(error => {
+                    console.error('Error fetching appointment details:', error);
+                    alert('Failed to load appointment details. Please try again.');
                 });
         }
 

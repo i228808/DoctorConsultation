@@ -1,13 +1,15 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" class="dark">
 <head>
     <meta charset="UTF-8">
-    <title>Patient Profile - HealthConnect</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Profile - Doctor Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script>
         tailwind.config = {
+            darkMode: 'class',
             theme: {
                 extend: {
                     fontFamily: {
@@ -26,19 +28,17 @@
                             800: '#075985',
                             900: '#0c4a6e',
                         },
-                    },
-                    animation: {
-                        'fade-in': 'fadeIn 0.5s ease-in-out',
-                        'slide-in': 'slideIn 0.5s ease-in-out',
-                    },
-                    keyframes: {
-                        fadeIn: {
-                            '0%': { opacity: '0' },
-                            '100%': { opacity: '1' },
-                        },
-                        slideIn: {
-                            '0%': { transform: 'translateX(-100%)' },
-                            '100%': { transform: 'translateX(0)' },
+                        dark: {
+                            50: '#f9fafb',
+                            100: '#f3f4f6',
+                            200: '#e5e7eb',
+                            300: '#d1d5db',
+                            400: '#9ca3af',
+                            500: '#6b7280',
+                            600: '#4b5563',
+                            700: '#374151',
+                            800: '#1f2937',
+                            900: '#111827',
                         },
                     },
                 },
@@ -47,12 +47,8 @@
     </script>
     <style>
         .glass-panel {
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        .dark .glass-panel {
             background: rgba(17, 24, 39, 0.7);
+            backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
         .hover-scale {
@@ -63,149 +59,200 @@
         }
     </style>
 </head>
-<body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
+<body class="bg-dark-900 text-gray-100 min-h-screen">
     <div class="flex min-h-screen">
         <!-- Sidebar -->
-        <nav class="w-64 bg-gradient-to-b from-primary-800 to-primary-900 text-white transition-all duration-300">
+        <nav class="w-64 bg-gradient-to-b from-dark-800 to-dark-900 text-white transition-all duration-300">
             <div class="p-6">
                 <div class="flex items-center space-x-4 mb-8">
-                    <img th:src="${patient != null ? patient.profilePicture : '/images/default-avatar.png'}" alt="Profile" class="w-12 h-12 rounded-full border-2 border-white">
+                    <img th:src="${doctor != null ? doctor.profilePicture : '/images/default-avatar.png'}" alt="Profile" class="w-12 h-12 rounded-full border-2 border-primary-500">
                     <div>
-                        <h2 class="text-lg font-semibold" th:text="${patient != null ? patient.firstName + ' ' + patient.lastName : 'Patient'}">Patient Name</h2>
-                        <p class="text-sm text-primary-200">Patient</p>
+                        <h2 class="text-lg font-semibold" th:text="${doctor != null ? doctor.firstName + ' ' + doctor.lastName : 'Doctor'}">Doctor Name</h2>
+                        <p class="text-sm text-primary-300" th:text="${doctor != null ? doctor.specialization : 'Specialization'}">Specialization</p>
                     </div>
                 </div>
                 <ul class="space-y-2">
                     <li>
-                        <a href="/patients/home" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-primary-700/50 text-white transition-colors">
+                        <a href="/doctors/dashboard" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-primary-700/50 text-white transition-colors">
                             <i class="fas fa-home"></i>
                             <span>Dashboard</span>
                         </a>
                     </li>
                     <li>
-                        <a href="/doctors/searchpage" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-primary-700/50 text-white transition-colors">
-                            <i class="fas fa-search"></i>
-                            <span>Find Doctors</span>
+                        <a href="/doctors/my-patients" class="flex items-center space-x-3 p-3 rounded-lg bg-primary-700/50 text-white">
+                            <i class="fas fa-users"></i>
+                            <span>My Patients</span>
                         </a>
                     </li>
                     <li>
-                        <a href="/prescriptions" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-primary-700/50 text-white transition-colors">
-                            <i class="fas fa-file-prescription"></i>
-                            <span>Prescriptions</span>
+                        <a href="/doctors/myappointments" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-primary-700/50 text-white transition-colors">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>Appointments</span>
                         </a>
                     </li>
                     <li>
-                        <a href="/patients/view-health-goals" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-primary-700/50 text-white transition-colors">
-                            <i class="fas fa-chart-line"></i>
-                            <span>Health Goals</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="/patients/manage-profile" class="flex items-center space-x-3 p-3 rounded-lg bg-primary-700/50 text-white">
-                            <i class="fas fa-user-cog"></i>
+                        <a href="/doctors/manage-profile" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-primary-700/50 text-white transition-colors">
+                            <i class="fas fa-user-md"></i>
                             <span>Manage Profile</span>
                         </a>
                     </li>
+                    <li>
+                        <a href="/logout" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-red-700/50 text-red-300 transition-colors">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Logout</span>
+                        </a>
+                    </li>
                 </ul>
-                
-                <!-- Logout Button -->
-                <div class="mt-auto pt-8">
-                    <a href="/logout" class="flex items-center space-x-3 p-3 rounded-lg bg-red-600/20 hover:bg-red-600/30 text-red-200 transition-colors">
-                        <i class="fas fa-sign-out-alt"></i>
-                        <span>Logout</span>
-                    </a>
-                </div>
             </div>
         </nav>
 
         <!-- Main Content -->
         <main class="flex-1 p-8">
             <div class="max-w-7xl mx-auto">
-                <!-- Profile Header -->
-                <div class="glass-panel p-6 rounded-xl mb-8">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center space-x-6">
-                            <img th:src="${patient != null ? patient.profilePicture : '/images/default-avatar.png'}" 
-                                 alt="Profile" 
-                                 class="w-24 h-24 rounded-full border-4 border-primary-500">
-                            <div>
-                                <h1 class="text-2xl font-bold text-gray-900 dark:text-white" th:text="${patient != null ? patient.firstName + ' ' + patient.lastName : 'Patient'}">Patient Name</h1>
-                                <p class="text-gray-600 dark:text-gray-400" th:text="${patient != null ? patient.email : 'Email'}">email@example.com</p>
-                            </div>
-                        </div>
-                        <button class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">
-                            <i class="fas fa-edit mr-2"></i>Edit Profile
-                        </button>
-                    </div>
+                <div class="flex justify-between items-center mb-8">
+                    <h1 class="text-3xl font-bold text-white">
+                        <i class="fas fa-user text-primary-400 mr-3"></i>
+                        Patient Profile
+                    </h1>
+                    <a href="/doctors/my-patients" class="text-primary-400 hover:text-primary-300 transition-colors duration-200">
+                        <i class="fas fa-arrow-left mr-2"></i>Back to Patients
+                    </a>
                 </div>
 
                 <!-- Patient Information -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                    <div class="glass-panel p-6 rounded-xl">
-                        <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Personal Information</h2>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Profile Card -->
+                    <div class="lg:col-span-1 glass-panel p-6 rounded-xl">
+                        <div class="flex flex-col items-center">
+                            <img th:src="${patient.profilePicture != null ? patient.profilePicture : '/images/default-avatar.png'}" 
+                                 alt="Patient Profile" 
+                                 class="w-32 h-32 rounded-full border-4 border-primary-500 mb-4">
+                            <h2 class="text-2xl font-bold text-white mb-2" th:text="${patient.firstName + ' ' + patient.lastName}">Patient Name</h2>
+                            <p class="text-gray-400 mb-6" th:text="${patient.email}">patient@example.com</p>
+                        </div>
                         <div class="space-y-4">
-                            <div class="flex justify-between">
-                                <span class="text-gray-600 dark:text-gray-400">Date of Birth</span>
-                                <span class="text-gray-900 dark:text-white" th:text="${patient != null ? patient.dateOfBirth : 'Not set'}">Not set</span>
+                            <div class="flex items-center text-gray-400">
+                                <i class="fas fa-phone text-primary-400 mr-3"></i>
+                                <span th:text="${patient.phone != null ? patient.phone : 'Not provided'}">Phone</span>
                             </div>
-                            <div class="flex justify-between">
-                                <span class="text-gray-600 dark:text-gray-400">Phone</span>
-                                <span class="text-gray-900 dark:text-white" th:text="${patient != null ? patient.phone : 'Not set'}">Not set</span>
+                            <div class="flex items-center text-gray-400">
+                                <i class="fas fa-map-marker-alt text-primary-400 mr-3"></i>
+                                <span th:text="${patient.address != null ? patient.address : 'Not provided'}">Address</span>
                             </div>
-                            <div class="flex justify-between">
-                                <span class="text-gray-600 dark:text-gray-400">Address</span>
-                                <span class="text-gray-900 dark:text-white" th:text="${patient != null ? patient.address : 'Not set'}">Not set</span>
+                            <div class="flex items-center text-gray-400">
+                                <i class="fas fa-venus-mars text-primary-400 mr-3"></i>
+                                <span th:text="${patient.gender}">Gender</span>
+                            </div>
+                            <div class="flex items-center text-gray-400">
+                                <i class="fas fa-birthday-cake text-primary-400 mr-3"></i>
+                                <span th:text="${#temporals.format(patient.dateOfBirth, 'MMM dd, yyyy')}">Date of Birth</span>
                             </div>
                         </div>
                     </div>
 
-                    <div class="glass-panel p-6 rounded-xl">
-                        <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Medical Summary</h2>
-                        <div class="space-y-4">
-                            <div class="flex justify-between">
-                                <span class="text-gray-600 dark:text-gray-400">Blood Type</span>
-                                <span class="text-gray-900 dark:text-white">Not set</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-gray-600 dark:text-gray-400">Allergies</span>
-                                <span class="text-gray-900 dark:text-white">None reported</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-gray-600 dark:text-gray-400">Chronic Conditions</span>
-                                <span class="text-gray-900 dark:text-white">None reported</span>
+                    <!-- Medical Information -->
+                    <div class="lg:col-span-2 glass-panel p-6 rounded-xl">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="text-xl font-semibold text-white">Medical Information</h3>
+                            <div class="flex space-x-4">
+                                <button onclick="openModal('addPrescriptionModal')" class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">
+                                    <i class="fas fa-file-prescription mr-2"></i>Add Prescription
+                                </button>
+                                <button onclick="openModal('addMedicalRecordModal')" class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">
+                                    <i class="fas fa-file-medical mr-2"></i>Add Medical Record
+                                </button>
                             </div>
                         </div>
-                    </div>
-                </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Appointments -->
+                            <div class="glass-panel p-4 rounded-lg">
+                                <h4 class="text-lg font-medium text-white mb-4">Recent Appointments</h4>
+                                <div class="space-y-3">
+                                    <div th:each="appointment : ${patient.appointments}" class="flex justify-between items-center">
+                                        <div>
+                                            <p class="text-white" th:text="${#temporals.format(appointment.apptDate, 'MMM dd, yyyy')}">Date</p>
+                                            <p class="text-sm text-gray-400" th:text="${#temporals.format(appointment.apptTime, 'HH:mm')}">Time</p>
+                                        </div>
+                                        <span th:class="${appointment.canceled ? 'text-red-400' : appointment.rescheduled ? 'text-yellow-400' : 'text-green-400'}"
+                                              th:text="${appointment.canceled ? 'CANCELLED' : appointment.rescheduled ? 'RESCHEDULED' : 'CONFIRMED'}">
+                                            Status
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
 
-                <!-- Medical Records -->
-                <div class="glass-panel p-6 rounded-xl">
-                    <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Medical Records</h2>
-                        <button class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors" data-toggle="modal" data-target="#addRecordModal">
-                            <i class="fas fa-plus mr-2"></i>Add Record
-                        </button>
-                    </div>
-                    <div class="space-y-4">
-                        <div th:if="${medicalRecords != null && !medicalRecords.empty}" th:each="record : ${medicalRecords}" class="p-4 bg-white dark:bg-gray-800 rounded-lg hover-scale">
-                            <div class="flex justify-between items-start">
-                                <div>
-                                    <h3 class="font-semibold text-gray-900 dark:text-white" th:text="${record.descript}">Record Description</h3>
-                                    <p class="text-sm text-gray-600 dark:text-gray-400" th:text="${record.recordDate}">Date</p>
+                            <!-- Medical Records -->
+                            <div class="glass-panel p-4 rounded-lg">
+                                <div class="flex justify-between items-center mb-4">
+                                    <h4 class="text-lg font-medium text-white">Medical Records</h4>
+                                    <button onclick="openModal('addRecordModal')" class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg transition-colors duration-200">
+                                        <i class="fas fa-plus mr-2"></i>Add Record
+                                    </button>
                                 </div>
-                                <div class="flex space-x-2">
-                                    <button class="p-2 text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                    <button class="p-2 text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300">
-                                        <i class="fas fa-trash-alt"></i>
-                                    </button>
+                                <div class="space-y-3">
+                                    <div th:each="record : ${patient.medicalRecords}" class="flex justify-between items-center">
+                                        <div>
+                                            <p class="text-white" th:text="${record.descript}">Record Description</p>
+                                            <p class="text-sm text-gray-400" th:text="${#temporals.format(record.recordDate, 'MMM dd, yyyy')}">Date</p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div th:unless="${medicalRecords != null && !medicalRecords.empty}" class="text-center py-8">
-                            <i class="fas fa-file-medical text-4xl text-gray-400 mb-4"></i>
-                            <p class="text-gray-600 dark:text-gray-400">No medical records available</p>
+
+                            <!-- Prescriptions -->
+                            <div class="glass-panel p-4 rounded-lg">
+                                <div class="flex justify-between items-center mb-4">
+                                    <h4 class="text-lg font-medium text-white">Recent Prescriptions</h4>
+                                    <button onclick="openModal('addPrescriptionModal')" class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg transition-colors duration-200">
+                                        <i class="fas fa-plus mr-2"></i>Add Prescription
+                                    </button>
+                                </div>
+                                <div class="space-y-3">
+                                    <div th:each="prescription : ${patient.prescriptions}" class="flex justify-between items-center">
+                                        <div>
+                                            <p class="text-white" th:text="${prescription.medicationDetails}">Medication Details</p>
+                                            <p class="text-sm text-gray-400" th:text="${prescription.dosage}">Dosage</p>
+                                            <p class="text-sm text-gray-400" th:text="${prescription.instructions}">Instructions</p>
+                                        </div>
+                                        <div class="text-right">
+                                            <span class="text-primary-400" th:text="${#temporals.format(prescription.dateIssued, 'MMM dd, yyyy')}">Issued Date</span>
+                                            <p class="text-sm text-gray-400" th:text="${#temporals.format(prescription.dateUntil, 'MMM dd, yyyy')}">Until Date</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Health Goals -->
+                            <div class="glass-panel p-4 rounded-lg">
+                                <div class="flex justify-between items-center mb-4">
+                                    <h4 class="text-lg font-medium text-white">Health Goals</h4>
+                                    <button onclick="openModal('addHealthGoalModal')" class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg transition-colors duration-200">
+                                        <i class="fas fa-plus mr-2"></i>Add Goal
+                                    </button>
+                                </div>
+                                <div class="space-y-3">
+                                    <div th:each="goal : ${patient.healthGoals}" class="flex justify-between items-center">
+                                        <div>
+                                            <p class="text-white" th:text="${goal.goalDescription}">Goal Description</p>
+                                            <p class="text-sm text-gray-400" th:text="${goal.status}">Status</p>
+                                            <div class="mt-2">
+                                                <div class="flex justify-between text-sm text-gray-400 mb-1">
+                                                    <span>Progress</span>
+                                                    <span th:text="${goal.progress + '%'}">0%</span>
+                                                </div>
+                                                <div class="h-2 bg-gray-700 rounded-full overflow-hidden">
+                                                    <div th:style="'width: ' + ${goal.progress} + '%'" 
+                                                         class="h-full bg-primary-500 rounded-full transition-all duration-500"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="text-right">
+                                            <span class="text-primary-400" th:text="${#temporals.format(goal.createdAt, 'MMM dd, yyyy')}">Created Date</span>
+                                            <p class="text-sm text-gray-400" th:text="${#temporals.format(goal.updatedAt, 'MMM dd, yyyy')}">Updated Date</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -213,37 +260,110 @@
         </main>
     </div>
 
-    <!-- Add Record Modal -->
-    <div class="modal fade" id="addRecordModal" tabindex="-1" role="dialog">
-        <div class="modal-dialog">
-            <div class="modal-content bg-white dark:bg-gray-800 rounded-lg">
-                <div class="modal-header border-b border-gray-200 dark:border-gray-700">
-                    <h5 class="modal-title text-gray-900 dark:text-white">Add Medical Record</h5>
-                    <button type="button" class="close text-gray-500 dark:text-gray-400" data-dismiss="modal">&times;</button>
-                </div>
-                <form th:action="@{/patients/profile/{id}/add-record(id=${patient.id})}" method="post">
-                    <div class="modal-body p-6">
-                        <div class="mb-4">
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Description</label>
-                            <textarea name="descript" required class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white" rows="3"></textarea>
-                        </div>
-                        <div class="mb-4">
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Date</label>
-                            <input type="date" name="recordDate" required class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white">
-                        </div>
-                    </div>
-                    <div class="modal-footer border-t border-gray-200 dark:border-gray-700 p-6">
-                        <button type="submit" class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">Add Record</button>
-                        <button type="button" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors" data-dismiss="modal">Cancel</button>
-                    </div>
-                </form>
+    <!-- Add Medical Record Modal -->
+    <div id="addRecordModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center">
+        <div class="bg-gray-800 rounded-lg p-6 w-full max-w-md">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-semibold text-white">Add Medical Record</h3>
+                <button onclick="closeModal('addRecordModal')" class="text-gray-400 hover:text-white">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
+            <form th:action="@{/doctors/patient-profile/{id}/add-record(id=${patient.id})}" method="post" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-1">Description</label>
+                    <textarea name="descript" required class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary-500"></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-1">Date</label>
+                    <input type="date" name="recordDate" required class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
+                </div>
+                <div class="flex justify-end space-x-3">
+                    <button type="button" onclick="closeModal('addRecordModal')" class="px-4 py-2 text-gray-300 hover:text-white">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors duration-200">Add Record</button>
+                </div>
+            </form>
         </div>
     </div>
 
-    <!-- Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Add Prescription Modal -->
+    <div id="addPrescriptionModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center">
+        <div class="bg-gray-800 rounded-lg p-6 w-full max-w-md">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-semibold text-white">Add Prescription</h3>
+                <button onclick="closeModal('addPrescriptionModal')" class="text-gray-400 hover:text-white">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form th:action="@{/doctors/patient-profile/{id}/add-prescription(id=${patient.id})}" method="post" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-1">Medication Details</label>
+                    <textarea name="medicationDetails" required class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary-500"></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-1">Dosage</label>
+                    <input type="text" name="dosage" required class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-1">Valid Until</label>
+                    <input type="date" name="dateUntil" required class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-1">Instructions</label>
+                    <textarea name="instructions" required class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary-500"></textarea>
+                </div>
+                <div class="flex justify-end space-x-3">
+                    <button type="button" onclick="closeModal('addPrescriptionModal')" class="px-4 py-2 text-gray-300 hover:text-white">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors duration-200">Add Prescription</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Health Goal Modal -->
+    <div id="addHealthGoalModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center">
+        <div class="bg-gray-800 rounded-lg p-6 w-full max-w-md">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-semibold text-white">Add Health Goal</h3>
+                <button onclick="closeModal('addHealthGoalModal')" class="text-gray-400 hover:text-white">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form th:action="@{/doctors/patient-profile/{id}/add-health-goal(id=${patient.id})}" method="post" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-1">Goal Description</label>
+                    <textarea name="goalDescription" required class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary-500"></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-1">Target Value</label>
+                    <input type="number" name="targetValue" required min="0" max="100" class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
+                </div>
+                <div class="flex justify-end space-x-3">
+                    <button type="button" onclick="closeModal('addHealthGoalModal')" class="px-4 py-2 text-gray-300 hover:text-white">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors duration-200">Add Goal</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.remove('hidden');
+            document.getElementById(modalId).classList.add('flex');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('flex');
+            document.getElementById(modalId).classList.add('hidden');
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            if (event.target.classList.contains('fixed')) {
+                event.target.classList.remove('flex');
+                event.target.classList.add('hidden');
+            }
+        }
+    </script>
 </body>
 </html>

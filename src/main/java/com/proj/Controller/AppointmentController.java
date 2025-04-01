@@ -301,4 +301,27 @@ public class AppointmentController {
             return "redirect:/doctors/searchpage";
         }
     }
+
+    @GetMapping("/api/appointments/{id}")
+    @ResponseBody
+    public ResponseEntity<Appointment> getAppointmentById(@PathVariable int id) {
+        try {
+            Optional<Appointment> appointmentOptional = appointmentService.getAppointmentById(id);
+            if (appointmentOptional.isPresent()) {
+                Appointment appointment = appointmentOptional.get();
+                // Ensure patient data is loaded
+                if (appointment.getPatient() == null) {
+                    Patient patient = patientService.getPatientById(appointment.getPatient_Id());
+                    if (patient != null) {
+                        appointment.setPatient(patient);
+                    }
+                }
+                return ResponseEntity.ok(appointment);
+            }
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();
+        }
+    }
 }

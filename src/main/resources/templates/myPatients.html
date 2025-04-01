@@ -116,7 +116,10 @@
 
                 <!-- Patient List -->
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <div th:each="patient : ${patients}" class="glass-panel p-6 rounded-xl hover-scale">
+                    <div th:each="patient : ${patients}" 
+                         onclick="navigateToPatientProfile(this)" 
+                         th:data-patient-id="${patient.id}"
+                         class="glass-panel p-6 rounded-xl hover-scale cursor-pointer">
                         <div class="flex items-center space-x-4 mb-4">
                             <img th:src="${patient.profilePicture != null ? patient.profilePicture : '/images/default-avatar.png'}" 
                                  alt="Patient Profile" 
@@ -137,12 +140,7 @@
                             </div>
                         </div>
                         <div class="mt-4 flex justify-end space-x-2">
-                            <button onclick="viewPatientDetails(this)" 
-                                    th:data-patient-id="${patient.id}"
-                                    class="text-primary-400 hover:text-primary-300 transition-colors duration-200">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                            <button onclick="viewPatientHistory(this)" 
+                            <button onclick="event.stopPropagation(); viewPatientHistory(this)" 
                                     th:data-patient-id="${patient.id}"
                                     class="text-blue-400 hover:text-blue-300 transition-colors duration-200">
                                 <i class="fas fa-history"></i>
@@ -154,74 +152,15 @@
         </main>
     </div>
 
-    <!-- View Patient Details Modal -->
-    <div id="viewPatientModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center backdrop-blur-sm">
-        <div class="glass-panel rounded-xl p-6 max-w-2xl w-full mx-4">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-2xl font-bold text-white">Patient Details</h2>
-                <button onclick="closeModal('viewPatientModal')" class="text-gray-400 hover:text-gray-300 transition-colors duration-200">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div id="patientDetails" class="space-y-4">
-                <!-- Details will be populated by JavaScript -->
-            </div>
-        </div>
-    </div>
-
     <script>
-        function viewPatientDetails(button) {
-            const patientId = button.getAttribute('data-patient-id');
-            // Fetch patient details and populate the modal
-            fetch(`/api/patients/${patientId}`)
-                .then(response => response.json())
-                .then(data => {
-                    const details = document.getElementById('patientDetails');
-                    details.innerHTML = `
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <p class="text-sm text-gray-400">Name</p>
-                                <p class="font-medium text-white">${data.firstName + ' ' + data.lastName}</p>
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-400">Email</p>
-                                <p class="font-medium text-white">${data.email}</p>
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-400">Phone</p>
-                                <p class="font-medium text-white">${data.phone || 'Not provided'}</p>
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-400">Address</p>
-                                <p class="font-medium text-white">${data.address || 'Not provided'}</p>
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-400">Gender</p>
-                                <p class="font-medium text-white">${data.gender}</p>
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-400">Date of Birth</p>
-                                <p class="font-medium text-white">${new Date(data.dateOfBirth).toLocaleDateString()}</p>
-                            </div>
-                        </div>
-                    `;
-                    openModal('viewPatientModal');
-                });
+        function navigateToPatientProfile(element) {
+            const patientId = element.getAttribute('data-patient-id');
+            window.location.href = `/doctors/patient-profile/${patientId}`;
         }
 
         function viewPatientHistory(button) {
             const patientId = button.getAttribute('data-patient-id');
             window.location.href = `/doctors/patient-history/${patientId}`;
-        }
-
-        function openModal(modalId) {
-            document.getElementById(modalId).classList.remove('hidden');
-            document.getElementById(modalId).classList.add('flex');
-        }
-
-        function closeModal(modalId) {
-            document.getElementById(modalId).classList.remove('flex');
-            document.getElementById(modalId).classList.add('hidden');
         }
     </script>
 </body>

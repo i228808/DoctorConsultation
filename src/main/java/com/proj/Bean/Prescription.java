@@ -8,29 +8,45 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
 
 @Entity
+@Table(name = "prescription")
 public class Prescription {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
 
-    @ManyToOne
-    @JoinColumn(name = "doctor_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "doctor_id", referencedColumnName = "id", nullable = false)
     private Doctor doctor;
 
-    @ManyToOne
-    @JoinColumn(name = "patient_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "patient_id", referencedColumnName = "id", nullable = false)
     private Patient patient;
 
+    @Column(name = "medication_details", nullable = false)
     private String medicationDetails;
+
+    @Column(name = "date_issued", nullable = false)
     private LocalDate dateIssued;
+
+    @Column(name = "dosage", nullable = false)
     private String dosage;
+
+    @Column(name = "date_until", nullable = false)
     private LocalDate dateUntil;
+
+    @Column(name = "instructions", nullable = false)
     private String instructions;
 
     // Constructors, getters, and setters
-    public Prescription() {}
+    public Prescription() {
+    }
 
     public Prescription(Doctor doctor, Patient patient, String medicationDetails, LocalDate dateIssued) {
         this.doctor = doctor;
@@ -39,7 +55,8 @@ public class Prescription {
         this.dateIssued = dateIssued;
     }
 
-    public Prescription(Doctor doctor, Patient patient, String medicationDetails, LocalDate dateIssued, String dosage, LocalDate dateUntil, String instructions) {
+    public Prescription(Doctor doctor, Patient patient, String medicationDetails, LocalDate dateIssued, String dosage,
+            LocalDate dateUntil, String instructions) {
         this.doctor = doctor;
         this.patient = patient;
         this.medicationDetails = medicationDetails;
@@ -48,9 +65,11 @@ public class Prescription {
         this.dateUntil = dateUntil;
         this.instructions = instructions;
     }
+
     public String getDosage() {
         return dosage;
     }
+
     public void setDosage(String dosage) {
         this.dosage = dosage;
     }
