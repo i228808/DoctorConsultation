@@ -139,40 +139,58 @@
 
                     <!-- Prescriptions List -->
                     <div class="space-y-4">
-                        <div th:if="${prescriptions != null && !prescriptions.isEmpty()}" class="space-y-4">
-                            <div th:each="prescription : ${prescriptions}" class="glass-panel p-4 rounded-lg hover-scale">
+                        <div th:if="${prescriptions != null and !prescriptions.isEmpty()}" 
+                             class="space-y-4" 
+                             th:with="today=${T(java.time.LocalDate).now()}">
+                            <div th:each="prescription : ${prescriptions}" 
+                                 th:with="issuedFormatted=${prescription.dateIssued != null ? #temporals.format(prescription.dateIssued, 'yyyy-MM-dd') : ''},
+                                          untilFormatted=${prescription.dateUntil != null ? #temporals.format(prescription.dateUntil, 'yyyy-MM-dd') : ''}"
+                                 class="glass-panel p-4 rounded-lg hover-scale">
                                 <div class="flex justify-between items-start mb-4">
                                     <div>
-                                        <h3 class="text-lg font-semibold text-white" th:text="${prescription.medicationDetails}">Medication Details</h3>
-                                        <p class="text-sm text-gray-400" th:text="${prescription.doctor != null ? 'Prescribed by Dr. ' + prescription.doctor.firstName + ' ' + prescription.doctor.lastName : 'Prescribed by Unknown Doctor'}">Doctor Name</p>
+                                        <h3 class="text-lg font-semibold text-white" 
+                                            th:text="${prescription.medicationDetails != null ? prescription.medicationDetails : 'No medication details'}">
+                                            Medication Details
+                                        </h3>
+                                        <p class="text-sm text-gray-400" 
+                                            th:text="${prescription.doctor != null ? 'Prescribed by Dr. ' + prescription.doctor.firstName + ' ' + prescription.doctor.lastName : 'Prescribed by Unknown Doctor'}">
+                                            Doctor Name
+                                        </p>
                                     </div>
                                     <span th:if="${prescription.dateUntil != null}" 
-                                          th:class="${#temporals.isAfter(prescription.dateUntil, #temporals.createNow()) ? 'bg-green-900/30 text-green-300' : 'bg-red-900/30 text-red-300'}"
+                                          th:class="${prescription.dateUntil.isAfter(today) ? 'bg-green-900/30 text-green-300' : 'bg-red-900/30 text-red-300'}"
                                           class="px-3 py-1 rounded-full text-sm font-medium">
-                                        <span th:text="${#temporals.isAfter(prescription.dateUntil, #temporals.createNow()) ? 'Active' : 'Expired'}">Status</span>
+                                        <span th:text="${prescription.dateUntil.isAfter(today) ? 'Active' : 'Expired'}">Status</span>
                                     </span>
                                 </div>
                                 <div class="grid grid-cols-2 gap-4 mb-4">
                                     <div>
                                         <p class="text-sm text-gray-400">Dosage</p>
-                                        <p class="text-white" th:text="${prescription.dosage}">Dosage</p>
+                                        <p class="text-white" th:text="${prescription.dosage != null ? prescription.dosage : 'N/A'}">Dosage</p>
                                     </div>
                                     <div>
                                         <p class="text-sm text-gray-400">Duration</p>
-                                        <p class="text-white" th:text="${prescription.dateIssued != null && prescription.dateUntil != null ? 
-                                            #temporals.format(prescription.dateIssued, 'MMM dd, yyyy') + ' to ' + 
-                                            #temporals.format(prescription.dateUntil, 'MMM dd, yyyy') : 'N/A'}">Duration</p>
+                                        <p class="text-white" 
+                                           th:text="${(issuedFormatted != '' and untilFormatted != '') ? issuedFormatted + ' to ' + untilFormatted : 'N/A'}">
+                                           Duration
+                                        </p>
                                     </div>
                                 </div>
                                 <div>
                                     <p class="text-sm text-gray-400">Instructions</p>
-                                    <p class="text-white" th:text="${prescription.instructions}">Instructions</p>
+                                    <p class="text-white" th:text="${prescription.instructions != null ? prescription.instructions : 'No instructions provided'}">
+                                        Instructions
+                                    </p>
                                 </div>
                             </div>
                         </div>
-                        <div th:unless="${prescriptions != null && !prescriptions.isEmpty()}" class="text-center py-8">
-                            <i class="fas fa-file-prescription text-4xl text-gray-600 mb-4"></i>
-                            <p class="text-gray-400">No prescriptions available</p>
+                        
+                        <!-- Empty State -->
+                        <div th:if="${prescriptions == null or prescriptions.isEmpty()}" 
+                             class="glass-panel p-6 text-center rounded-lg">
+                            <i class="fas fa-file-medical text-4xl text-primary-400 mb-4"></i>
+                            <h3 class="text-xl font-semibold text-white mb-2">No prescriptions found</h3>
+                            <p class="text-gray-400">You don't have any prescriptions yet.</p>
                         </div>
                     </div>
                 </div>
@@ -184,4 +202,4 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 </body>
-</html> 
+</html>

@@ -69,7 +69,7 @@
                     <div>
                         <h2 class="text-lg font-semibold" th:text="${doctor != null ? doctor.firstName + ' ' + doctor.lastName : 'Doctor'}">Doctor Name</h2>
                         <p class="text-sm text-primary-300" th:text="${doctor != null ? doctor.specialization : 'Specialization'}">Specialization</p>
-                    </div>
+</div>
                 </div>
                 <ul class="space-y-2">
                     <li>
@@ -218,9 +218,9 @@
                                             <span class="text-primary-400" th:text="${#temporals.format(prescription.dateIssued, 'MMM dd, yyyy')}">Issued Date</span>
                                             <p class="text-sm text-gray-400" th:text="${#temporals.format(prescription.dateUntil, 'MMM dd, yyyy')}">Until Date</p>
                                         </div>
-                                    </div>
-                                </div>
-                            </div>
+                </div>
+            </div>
+        </div>
 
                             <!-- Health Goals -->
                             <div class="glass-panel p-4 rounded-lg">
@@ -245,20 +245,20 @@
                                                          class="h-full bg-primary-500 rounded-full transition-all duration-500"></div>
                                                 </div>
                                             </div>
-                                        </div>
+                </div>
                                         <div class="text-right">
                                             <span class="text-primary-400" th:text="${#temporals.format(goal.createdAt, 'MMM dd, yyyy')}">Created Date</span>
                                             <p class="text-sm text-gray-400" th:text="${#temporals.format(goal.updatedAt, 'MMM dd, yyyy')}">Updated Date</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
                     </div>
                 </div>
             </div>
         </main>
-    </div>
+                    </div>
 
     <!-- Add Medical Record Modal -->
     <div id="addRecordModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center">
@@ -268,12 +268,12 @@
                 <button onclick="closeModal('addRecordModal')" class="text-gray-400 hover:text-white">
                     <i class="fas fa-times"></i>
                 </button>
-            </div>
+                    </div>
             <form th:action="@{/doctors/patient-profile/{id}/add-record(id=${patient.id})}" method="post" class="space-y-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-300 mb-1">Description</label>
                     <textarea name="descript" required class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary-500"></textarea>
-                </div>
+                    </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-300 mb-1">Date</label>
                     <input type="date" name="recordDate" required class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
@@ -283,8 +283,8 @@
                     <button type="submit" class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors duration-200">Add Record</button>
                 </div>
             </form>
-        </div>
     </div>
+</div>
 
     <!-- Add Prescription Modal -->
     <div id="addPrescriptionModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center">
@@ -303,11 +303,11 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-300 mb-1">Dosage</label>
                     <input type="text" name="dosage" required class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
-                </div>
+                    </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-300 mb-1">Valid Until</label>
                     <input type="date" name="dateUntil" required class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
-                </div>
+                    </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-300 mb-1">Instructions</label>
                     <textarea name="instructions" required class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary-500"></textarea>
@@ -317,8 +317,8 @@
                     <button type="submit" class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors duration-200">Add Prescription</button>
                 </div>
             </form>
-        </div>
     </div>
+</div>
 
     <!-- Add Health Goal Modal -->
     <div id="addHealthGoalModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center">
@@ -333,7 +333,7 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-300 mb-1">Goal Description</label>
                     <textarea name="goalDescription" required class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary-500"></textarea>
-                </div>
+                    </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-300 mb-1">Target Value</label>
                     <input type="number" name="targetValue" required min="0" max="100" class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
