@@ -139,25 +139,30 @@ public class PatientController {
     }
 
     @PostMapping("/profile/{id}/set-goal")
-    public String setGoal(@PathVariable int id, @RequestParam("description") String goal,
-            @RequestParam("target") int Target, HttpSession session, RedirectAttributes redirectAttributes) {
-        Patient patient = patientService.getPatientById(id);
-        Object User = session.getAttribute("currentUser");
-        if (!(User instanceof Doctor)) {
-            redirectAttributes.addFlashAttribute("error", "Doctor not found!");
-            return "redirect:/patients/profile/" + id;
+    public String setGoal(@PathVariable int id,
+            @RequestParam("description") String goal,
+            @RequestParam("target") int Target,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
+        try {
+            Patient patient = patientService.getPatientById(id);
+            Object User = session.getAttribute("currentUser");
+            if (!(User instanceof Doctor)) {
+                redirectAttributes.addFlashAttribute("error", "Doctor not found!");
+                return "redirect:/patients/view-health-goals";
+            }
+            Doctor doctor = (Doctor) User;
+            LocalDate startDate = LocalDate.now();
+            LocalDate updatedAt = LocalDate.now();
+            HealthGoal healthGoal = new HealthGoal(doctor, patient, goal, Target, "Pending", startDate, updatedAt);
+            healthGoalService.createHealthGoal(healthGoal);
+            redirectAttributes.addFlashAttribute("success", "Goal set successfully!");
+            return "redirect:/patients/view-health-goals";
+        } catch (Exception e) {
+            e.printStackTrace();
+            redirectAttributes.addFlashAttribute("error", "Failed to set goal. Please try again.");
+            return "redirect:/patients/view-health-goals";
         }
-        Doctor doctor = (Doctor) User;
-        LocalDate startDate = LocalDate.now();
-        LocalDate updatedAt = LocalDate.now();
-        HealthGoal healthGoal = new HealthGoal(doctor, patient, goal, Target, "Pending", startDate, updatedAt);
-        /*
-         * patient.setHealthGoal(healthGoal);
-         * patientService.updatePatient(patient);
-         */
-        healthGoalService.createHealthGoal(healthGoal);
-        redirectAttributes.addFlashAttribute("success", "Goal set successfully!");
-        return "redirect:/patients/profile/" + id;
     }
 
     @GetMapping("/home")

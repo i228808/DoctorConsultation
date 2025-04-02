@@ -62,16 +62,22 @@
             background: rgba(17, 24, 39, 0.7);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.1);
+            transform: translateZ(0);
+            will-change: transform;
+            backface-visibility: hidden;
         }
         .dark .glass-panel {
             background: rgba(17, 24, 39, 0.8);
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
         .hover-scale {
-            transition: transform 0.2s ease-in-out;
+            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateZ(0);
+            will-change: transform;
+            backface-visibility: hidden;
         }
         .hover-scale:hover {
-            transform: scale(1.02);
+            transform: scale(1.02) translateZ(0);
         }
     </style>
 </head>
@@ -81,9 +87,9 @@
         <nav class="w-64 bg-gradient-to-b from-dark-800 to-dark-900 text-white transition-all duration-300">
             <div class="p-6">
                 <div class="flex items-center space-x-4 mb-8">
-                    <img th:src="${patient != null ? patient.profilePicture : '/images/default-avatar.png'}" alt="Profile" class="w-12 h-12 rounded-full border-2 border-primary-500">
+                    <img th:src="${patient.profilePicture}" alt="Profile" class="w-12 h-12 rounded-full border-2 border-primary-500">
                     <div>
-                        <h2 class="text-lg font-semibold" th:text="${patient != null ? patient.firstName + ' ' + patient.lastName : 'Patient'}">Patient Name</h2>
+                        <h2 class="text-lg font-semibold" th:text="${patient.firstName + ' ' + patient.lastName}">Patient Name</h2>
                         <p class="text-sm text-primary-300">Patient</p>
                     </div>
                 </div>
@@ -133,67 +139,75 @@
         <!-- Main Content -->
         <main class="flex-1 p-8">
             <div class="max-w-4xl mx-auto">
+                <!-- Flash Messages -->
+                <div th:if="${success}" class="mb-4 p-4 bg-green-900/30 text-green-300 rounded-lg">
+                    <span th:text="${success}"></span>
+                </div>
+                <div th:if="${error}" class="mb-4 p-4 bg-red-900/30 text-red-300 rounded-lg">
+                    <span th:text="${error}"></span>
+                </div>
+
                 <div class="glass-panel p-6 rounded-xl mb-8">
                     <div class="flex justify-between items-center mb-6">
                         <h1 class="text-2xl font-bold text-white">
                             <i class="fas fa-chart-line text-primary-400 mr-2"></i>
                             Health Goals
                         </h1>
-                        <button onclick="openAddGoalModal()" 
-                                class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">
-                            <i class="fas fa-plus mr-2"></i>New Goal
-                        </button>
                     </div>
 
                     <!-- Health Goals List -->
                     <div class="space-y-4">
-                        <div th:if="${healthGoals != null and not healthGoals.isEmpty()}" class="space-y-4">
-                            <div th:each="goal : ${healthGoals}" class="glass-panel p-4 rounded-lg hover-scale">
+                        <div th:if="${healthGoals != null and not #lists.isEmpty(healthGoals)}">
+                            <div th:each="goal : ${healthGoals}" class="glass-panel p-4 rounded-lg hover-scale mb-4">
                                 <div class="flex justify-between items-start mb-4">
                                     <div>
                                         <h3 class="text-lg font-semibold text-white" 
-                                            th:text="${goal.description ?: 'No description provided'}">
-                                            Goal Description
+                                            th:text="${goal.goalDescription}">
                                         </h3>
                                         <p class="text-sm text-gray-400" 
-                                            th:text="${goal.doctor != null ? 
-                                            'Set by Dr. ' + goal.doctor.firstName + ' ' + goal.doctor.lastName : 
-                                            'Set by Unknown Doctor'}">
-                                            Set by Doctor
+                                            th:if="${goal.doctor != null}"
+                                            th:text="'Set by Dr. ' + ${goal.doctor.firstName} + ' ' + ${goal.doctor.lastName}">
                                         </p>
                                     </div>
                                     <span th:class="${goal.status == 'Completed' ? 'bg-green-900/30 text-green-300' : 
-                                                   (goal.status == 'In Progress' ? 'bg-blue-900/30 text-blue-300' : 
-                                                   'bg-yellow-900/30 text-yellow-300')}"
+                                                 (goal.status == 'In Progress' ? 'bg-blue-900/30 text-blue-300' : 
+                                                 'bg-yellow-900/30 text-yellow-300')}"
                                           class="px-3 py-1 rounded-full text-sm font-medium">
-                                        <span th:text="${goal.status ?: 'Not Set'}">Status</span>
+                                        <span th:text="${goal.status}">Status</span>
                                     </span>
                                 </div>
                                 <div class="mb-4">
                                     <div class="flex justify-between text-sm text-gray-400 mb-1">
                                         <span>Progress</span>
-                                        <span th:text="${(goal.progress != null ? goal.progress : 0) + '%'}">0%</span>
+                                        <span th:text="${#numbers.formatDecimal(goal.progress * 100.0 / goal.targetValue, 0, 1) + '%'}">0%</span>
                                     </div>
                                     <div class="h-2 bg-dark-700 rounded-full overflow-hidden">
-                                        <div th:style="'width: ' + (goal.progress != null ? goal.progress : 0) + '%'" 
-                                             class="h-full bg-primary-500 rounded-full transition-all duration-500"></div>
+                                        <div th:style="'width: ' + ${#numbers.formatDecimal(goal.progress * 100.0 / goal.targetValue, 0, 1)} + '%'" 
+                                             class="h-full bg-primary-500 rounded-full transition-all duration-500">
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="flex justify-between text-sm text-gray-400">
-                                    <span th:text="'Created: ' + ${goal.createdAt != null ? 
-                                        #temporals.format(goal.createdAt, 'yyyy-MM-dd HH:mm') : 'N/A'}">
-                                        Created Date
-                                    </span>
-                                    <span th:text="'Last Updated: ' + ${goal.updatedAt != null ? 
-                                        #temporals.format(goal.updatedAt, 'yyyy-MM-dd HH:mm') : 'N/A'}">
-                                        Updated Date
-                                    </span>
+                                <div class="flex justify-between items-center">
+                                    <div class="text-sm text-gray-400">
+                                        <span>Target: </span>
+                                        <span th:text="${goal.targetValue}">0</span>
+                                    </div>
+                                    <form th:action="@{/updateProgress}" method="post" class="flex items-center space-x-4">
+                                        <input type="hidden" name="goalId" th:value="${goal.id}"/>
+                                        <input type="number" name="progress" min="0" th:max="${goal.targetValue}"
+                                               class="w-20 px-2 py-1 bg-dark-800 border border-dark-600 rounded-lg text-white"
+                                               placeholder="Progress"/>
+                                        <button type="submit" 
+                                                class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">
+                                            Update Progress
+                                        </button>
+                                    </form>
                                 </div>
                             </div>
                         </div>
-                        
+
                         <!-- Empty State -->
-                        <div th:if="${healthGoals == null or healthGoals.isEmpty()}" 
+                        <div th:if="${healthGoals == null or #lists.isEmpty(healthGoals)}" 
                              class="glass-panel p-6 text-center rounded-lg">
                             <i class="fas fa-chart-line text-4xl text-primary-400 mb-4"></i>
                             <h3 class="text-xl font-semibold text-white mb-2">No health goals found</h3>
@@ -204,55 +218,5 @@
             </div>
         </main>
     </div>
-
-    <!-- Add Goal Modal -->
-    <div id="addGoalModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center">
-        <div class="glass-panel p-6 rounded-xl w-full max-w-md">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-semibold text-white">Add New Health Goal</h2>
-                <button onclick="closeAddGoalModal()" class="text-gray-400 hover:text-white">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <form th:action="@{/patients/profile/{id}/set-goal(id=${patient.id})}" method="post" class="space-y-4">
-                <!-- Add CSRF Token if using Spring Security -->
-                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                
-                <div>
-                    <label class="block text-sm font-medium text-gray-300 mb-2">Goal Description</label>
-                    <textarea name="description" required
-                              class="w-full px-3 py-2 bg-dark-800 border border-dark-600 rounded-lg focus:ring-2 focus:ring-primary-500 text-white placeholder-gray-400" 
-                              rows="3"></textarea>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-300 mb-2">Target Value</label>
-                    <input type="number" name="target" required min="1"
-                           class="w-full px-3 py-2 bg-dark-800 border border-dark-600 rounded-lg focus:ring-2 focus:ring-primary-500 text-white placeholder-gray-400">
-                </div>
-                <div class="flex justify-end space-x-4">
-                    <button type="button" onclick="closeAddGoalModal()"
-                            class="px-4 py-2 bg-dark-700 text-gray-300 rounded-lg hover:bg-dark-600 transition-colors">
-                        Cancel
-                    </button>
-                    <button type="submit"
-                            class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">
-                        Add Goal
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <script>
-        function openAddGoalModal() {
-            document.getElementById('addGoalModal').classList.remove('hidden');
-            document.getElementById('addGoalModal').classList.add('flex');
-        }
-
-        function closeAddGoalModal() {
-            document.getElementById('addGoalModal').classList.add('hidden');
-            document.getElementById('addGoalModal').classList.remove('flex');
-        }
-    </script>
 </body>
 </html>
