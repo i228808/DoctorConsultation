@@ -2,7 +2,8 @@
 <html xmlns:th="http://www.thymeleaf.org" class="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Manage your appointments on HealthConnect - View, update, and cancel patient appointments">
     <title>My Appointments - Doctor Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -56,6 +57,70 @@
         }
         .hover-scale:hover {
             transform: scale(1.02);
+        }
+
+        @media (max-width: 768px) {
+            .glass-panel {
+                padding: 1rem;
+            }
+            nav.w-64 {
+                width: 100%;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                height: auto;
+                z-index: 50;
+                padding: 0.5rem;
+            }
+            nav.w-64 .p-6 {
+                padding: 0.5rem;
+            }
+            nav.w-64 ul {
+                display: flex;
+                overflow-x: auto;
+                gap: 0.5rem;
+                padding-bottom: 0.5rem;
+            }
+            nav.w-64 ul li {
+                flex-shrink: 0;
+            }
+            nav.w-64 .flex.items-center.space-x-4.mb-8 {
+                display: none;
+            }
+            main.flex-1 {
+                margin-bottom: 5rem;
+            }
+            .mb-6 .border-b.border-gray-700 nav {
+                overflow-x: auto;
+                white-space: nowrap;
+                padding-bottom: 0.5rem;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .glass-panel .p-6 {
+                padding: 0.75rem;
+            }
+            h1.text-3xl {
+                font-size: 1.5rem;
+            }
+            .flex.justify-between.items-start {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+            .flex.justify-between.items-start .text-right {
+                text-align: left;
+                width: 100%;
+            }
+            .flex.space-x-2 {
+                margin-top: 0.5rem;
+                width: 100%;
+                justify-content: flex-end;
+            }
+            .glass-panel.rounded-xl.p-6.max-w-2xl.w-full.mx-4 {
+                max-width: 90%;
+                padding: 1rem;
+            }
         }
     </style>
 </head>
@@ -137,7 +202,7 @@
                         <div class="flex justify-between items-start">
                             <div>
                                 <h3 class="text-lg font-semibold text-white" th:text="${appointment.patient.firstName + ' ' + appointment.patient.lastName}">Patient Name</h3>
-                                <p class="text-gray-400" th:text="${appointment.patient.email}">patient@example.com</p>
+                                <p class="text-gray-400" th:text="${appointment.patient.email}"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="047465706d616a7044617c65697468612a676b69">[email&#160;protected]</a></p>
                             </div>
                             <div class="text-right">
                                 <p class="text-gray-400" th:text="${#temporals.format(appointment.apptDate, 'MMM dd, yyyy')}">Date</p>
@@ -182,7 +247,7 @@
                         <div class="flex justify-between items-start">
                             <div>
                                 <h3 class="text-lg font-semibold text-white" th:text="${appointment.patient.firstName + ' ' + appointment.patient.lastName}">Patient Name</h3>
-                                <p class="text-gray-400" th:text="${appointment.patient.email}">patient@example.com</p>
+                                <p class="text-gray-400" th:text="${appointment.patient.email}"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="047465706d616a7044617c65697468612a676b69">[email&#160;protected]</a></p>
                             </div>
                             <div class="text-right">
                                 <p class="text-gray-400" th:text="${#temporals.format(appointment.apptDate, 'MMM dd, yyyy')}">Date</p>
@@ -354,7 +419,7 @@
         </div>
     </div>
 
-    <script>
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
         function showTab(tabName) {
             document.getElementById('upcomingTab').classList.toggle('hidden', tabName !== 'upcoming');
             document.getElementById('pastTab').classList.toggle('hidden', tabName !== 'past');

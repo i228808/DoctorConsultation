@@ -2,7 +2,10 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="View doctor profiles on HealthConnect - See qualifications, reviews, and book appointments with healthcare providers">
     <title>Doctor Profile - HealthConnect</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -54,6 +57,69 @@
         }
         .hover-scale:hover {
             transform: scale(1.02);
+        }
+
+        @media (max-width: 768px) {
+            .glass-panel {
+                padding: 1rem;
+            }
+            nav.w-64 {
+                width: 100%;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                height: auto;
+                z-index: 50;
+                padding: 0.5rem;
+            }
+            nav.w-64 .p-6 {
+                padding: 0.5rem;
+            }
+            nav.w-64 ul {
+                display: flex;
+                overflow-x: auto;
+                gap: 0.5rem;
+                padding-bottom: 0.5rem;
+            }
+            nav.w-64 ul li {
+                flex-shrink: 0;
+            }
+            nav.w-64 .flex.items-center.space-x-4.mb-8,
+            nav.w-64 .mt-auto.pt-8,
+            nav.w-64 .relative {
+                display: none;
+            }
+            main.flex-1 {
+                margin-bottom: 5rem;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .glass-panel .p-6 {
+                padding: 0.75rem;
+            }
+            h1.text-3xl {
+                font-size: 1.5rem;
+            }
+            .flex.items-start.space-x-6 {
+                flex-direction: column;
+                align-items: center;
+                gap: 1rem;
+            }
+            .flex.items-start.space-x-6 img {
+                margin: 0 auto;
+            }
+            .flex.justify-between.items-start.mb-4 {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+            .flex.justify-between.items-start.mb-4 a {
+                width: 100%;
+                text-align: center;
+            }
+            .flex.space-x-2 {
+                justify-content: center;
+            }
         }
     </style>
 </head>
@@ -150,7 +216,7 @@
                             <div class="space-y-4">
                                 <div class="flex items-center text-gray-300">
                                     <i class="fas fa-envelope text-primary-400 mr-3"></i>
-                                    <span th:text="${doctor.email}">email@example.com</span>
+                                    <span th:text="${doctor.email}"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="95f0f8f4fcf9d5f0edf4f8e5f9f0bbf6faf8">[email&#160;protected]</a></span>
                                 </div>
                                 <div class="flex items-center text-gray-300">
                                     <i class="fas fa-phone text-primary-400 mr-3"></i>
@@ -238,7 +304,7 @@
         </main>
     </div>
 
-    <script>
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
         // Rating stars interaction
         document.querySelectorAll('.rating-btn').forEach(btn => {
             btn.addEventListener('click', function() {
@@ -275,3 +341,4 @@
     </script>
 </body>
 </html>
+

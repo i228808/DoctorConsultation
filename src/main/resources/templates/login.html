@@ -2,6 +2,8 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Login to HealthConnect - Access your healthcare dashboard and manage your health">
     <title>Login - HealthConnect</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -223,6 +225,44 @@
             transform: translate(-50%, -50%);
             color: white;
         }
+
+        @media (max-width: 768px) {
+            .login-container {
+                padding: 1.5rem;
+                max-width: 90%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 1.25rem;
+                max-width: 95%;
+            }
+            
+            .logo h1 {
+                font-size: 1.5rem;
+            }
+            
+            .logo i {
+                font-size: 2rem;
+            }
+            
+            .signup-buttons {
+                flex-direction: column;
+            }
+            
+            .btn-signup {
+                padding: 0.6rem;
+            }
+            
+            .form-control {
+                padding: 0.6rem 1rem 0.6rem 2.5rem;
+            }
+            
+            .btn-login {
+                padding: 0.6rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -280,3 +320,4 @@
     </script>
 </body>
 </html>
+

@@ -2,6 +2,8 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Manage your patient profile on HealthConnect - Update personal information and health details">
     <title>Manage Profile - HealthConnect</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -72,6 +74,64 @@
         }
         .hover-scale:hover {
             transform: scale(1.02);
+        }
+
+        @media (max-width: 768px) {
+            .glass-panel {
+                padding: 1rem;
+            }
+            nav.w-64 {
+                width: 100%;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                height: auto;
+                z-index: 50;
+                padding: 0.5rem;
+            }
+            nav.w-64 .p-6 {
+                padding: 0.5rem;
+            }
+            nav.w-64 ul {
+                display: flex;
+                overflow-x: auto;
+                gap: 0.5rem;
+                padding-bottom: 0.5rem;
+            }
+            nav.w-64 ul li {
+                flex-shrink: 0;
+            }
+            nav.w-64 .flex.items-center.space-x-4.mb-8,
+            nav.w-64 .mt-auto.pt-8 {
+                display: none;
+            }
+            main.flex-1 {
+                margin-bottom: 5rem;
+            }
+            .grid.grid-cols-1.md\:grid-cols-2.gap-6 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .glass-panel .p-6 {
+                padding: 0.75rem;
+            }
+            h1.text-2xl {
+                font-size: 1.25rem;
+            }
+            .flex.items-center.space-x-6 {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            .flex.justify-end.space-x-4 {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            .flex.justify-end.space-x-4 button {
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -233,3 +293,5 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
+
+ 

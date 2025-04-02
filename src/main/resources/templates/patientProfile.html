@@ -2,7 +2,8 @@
 <html xmlns:th="http://www.thymeleaf.org" class="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="View and manage patient profiles on HealthConnect - Access medical records, prescriptions, and health goals">
     <title>Patient Profile - Doctor Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -56,6 +57,79 @@
         }
         .hover-scale:hover {
             transform: scale(1.02);
+        }
+
+        @media (max-width: 768px) {
+            .glass-panel {
+                padding: 1rem;
+            }
+            nav.w-64 {
+                width: 100%;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                height: auto;
+                z-index: 50;
+                padding: 0.5rem;
+            }
+            nav.w-64 .p-6 {
+                padding: 0.5rem;
+            }
+            nav.w-64 ul {
+                display: flex;
+                overflow-x: auto;
+                gap: 0.5rem;
+                padding-bottom: 0.5rem;
+            }
+            nav.w-64 ul li {
+                flex-shrink: 0;
+            }
+            nav.w-64 .flex.items-center.space-x-4.mb-8 {
+                display: none;
+            }
+            main.flex-1 {
+                margin-bottom: 5rem;
+            }
+            .grid.grid-cols-1.lg\:grid-cols-3.gap-6 {
+                grid-template-columns: 1fr;
+            }
+            .grid.grid-cols-1.md\:grid-cols-2.gap-6 {
+                grid-template-columns: 1fr;
+            }
+            .flex.justify-between.items-center.mb-6 {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.75rem;
+            }
+            .flex.justify-between.items-center.mb-6 .flex.space-x-4 {
+                width: 100%;
+                justify-content: flex-start;
+                margin-top: 0.5rem;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .glass-panel .p-6 {
+                padding: 0.75rem;
+            }
+            h1.text-3xl {
+                font-size: 1.5rem;
+            }
+            .flex.flex-col.items-center {
+                align-items: center;
+            }
+            .flex.justify-between.items-center.mb-4 {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+            .flex.justify-between.items-center.mb-4 button {
+                width: 100%;
+            }
+            .bg-gray-800.rounded-lg.p-6.w-full.max-w-md {
+                max-width: 90%;
+                padding: 1rem;
+            }
         }
     </style>
 </head>
@@ -128,7 +202,7 @@
                                  alt="Patient Profile" 
                                  class="w-32 h-32 rounded-full border-4 border-primary-500 mb-4">
                             <h2 class="text-2xl font-bold text-white mb-2" th:text="${patient.firstName + ' ' + patient.lastName}">Patient Name</h2>
-                            <p class="text-gray-400 mb-6" th:text="${patient.email}">patient@example.com</p>
+                            <p class="text-gray-400 mb-6" th:text="${patient.email}"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="552534213c303b2115302d34382539307b363a38">[email&#160;protected]</a></p>
                         </div>
                         <div class="space-y-4">
                             <div class="flex items-center text-gray-400">
@@ -346,7 +420,7 @@
         </div>
     </div>
 
-    <script>
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
         function openModal(modalId) {
             document.getElementById(modalId).classList.remove('hidden');
             document.getElementById(modalId).classList.add('flex');
@@ -367,3 +441,4 @@
     </script>
 </body>
 </html>
+

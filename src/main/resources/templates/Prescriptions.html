@@ -2,6 +2,8 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="View and manage your prescriptions on HealthConnect - Track your medications and dosage information">
     <title>Prescriptions - HealthConnect</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -68,6 +70,60 @@
         }
         .hover-scale:hover {
             transform: scale(1.02);
+        }
+
+        @media (max-width: 768px) {
+            .glass-panel {
+                padding: 1rem;
+            }
+            nav.w-64 {
+                width: 100%;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                height: auto;
+                z-index: 50;
+                padding: 0.5rem;
+            }
+            nav.w-64 .p-6 {
+                padding: 0.5rem;
+            }
+            nav.w-64 ul {
+                display: flex;
+                overflow-x: auto;
+                gap: 0.5rem;
+                padding-bottom: 0.5rem;
+            }
+            nav.w-64 ul li {
+                flex-shrink: 0;
+            }
+            nav.w-64 .flex.items-center.space-x-4.mb-8,
+            nav.w-64 .mt-auto.pt-8 {
+                display: none;
+            }
+            main.flex-1 {
+                margin-bottom: 5rem;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .glass-panel .p-6 {
+                padding: 0.75rem;
+            }
+            h1.text-2xl {
+                font-size: 1.25rem;
+            }
+            .grid.grid-cols-2.gap-4.mb-4 {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+            .flex.justify-between.items-start.mb-4 {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            .flex.justify-between.items-start.mb-4 > span {
+                align-self: flex-start;
+            }
         }
     </style>
 </head>

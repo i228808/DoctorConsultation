@@ -2,7 +2,8 @@
 <html xmlns:th="http://www.thymeleaf.org" class="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Manage your patients on HealthConnect - View patient information and medical history">
     <title>My Patients - Doctor Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -56,6 +57,59 @@
         }
         .hover-scale:hover {
             transform: scale(1.02);
+        }
+
+        @media (max-width: 768px) {
+            .glass-panel {
+                padding: 1rem;
+            }
+            nav.w-64 {
+                width: 100%;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                height: auto;
+                z-index: 50;
+                padding: 0.5rem;
+            }
+            nav.w-64 .p-6 {
+                padding: 0.5rem;
+            }
+            nav.w-64 ul {
+                display: flex;
+                overflow-x: auto;
+                gap: 0.5rem;
+                padding-bottom: 0.5rem;
+            }
+            nav.w-64 ul li {
+                flex-shrink: 0;
+            }
+            nav.w-64 .flex.items-center.space-x-4.mb-8 {
+                display: none;
+            }
+            main.flex-1 {
+                margin-bottom: 5rem;
+            }
+            .grid.grid-cols-1.md\:grid-cols-2.lg\:grid-cols-3.gap-6 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .glass-panel .p-6 {
+                padding: 0.75rem;
+            }
+            h1.text-3xl {
+                font-size: 1.5rem;
+            }
+            .flex.items-center.space-x-4.mb-4 {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.75rem;
+            }
+            .flex.items-center.space-x-4.mb-4 img {
+                margin: 0 auto;
+            }
         }
     </style>
 </head>
@@ -126,7 +180,7 @@
                                  class="w-16 h-16 rounded-full border-2 border-primary-500">
                             <div>
                                 <h3 class="text-lg font-semibold text-white" th:text="${patient.firstName + ' ' + patient.lastName}">Patient Name</h3>
-                                <p class="text-sm text-gray-400" th:text="${patient.email}">patient@example.com</p>
+                                <p class="text-sm text-gray-400" th:text="${patient.email}"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="2a5a4b5e434f445e6a4f524b475a464f04494547">[email&#160;protected]</a></p>
                             </div>
                         </div>
                         <div class="space-y-2">
@@ -152,7 +206,7 @@
         </main>
     </div>
 
-    <script>
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
         function navigateToPatientProfile(element) {
             const patientId = element.getAttribute('data-patient-id');
             window.location.href = `/doctors/patient-profile/${patientId}`;
